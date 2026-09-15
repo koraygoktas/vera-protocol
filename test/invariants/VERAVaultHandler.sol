@@ -58,6 +58,7 @@ contract VERAVaultHandler is Test {
         actors.push(address(0x222));
         actors.push(address(0x333));
 
+        vm.startPrank(owner);
         for (uint256 i = 0; i < actors.length; i++) {
             complianceToken.setCompliance(actors[i], true);
             usdc.transfer(actors[i], 10_000_000 * 1e6); // 10M USDC each
@@ -67,6 +68,7 @@ contract VERAVaultHandler is Test {
         nonCompliantActor = address(0xBAD);
         complianceToken.setCompliance(nonCompliantActor, false);
         usdc.transfer(nonCompliantActor, 1_000_000 * 1e6);
+        vm.stopPrank();
 
         ghost_currentEpoch = vault.currentEpoch();
         ghost_lastValidNAV = vault.currentNAV();

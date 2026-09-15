@@ -212,12 +212,12 @@ contract VERAVaultComprehensiveTest is Test {
         vault.deposit(30_000 * 1e6, bob);
         vm.stopPrank();
 
-        // Both initiate withdrawals in Epoch 0 (Total 40k shares queued)
+        // Both initiate redemptions in Epoch 0 (Total 40k shares queued)
         vm.prank(alice);
-        vault.withdraw(10_000 * 1e6, alice, alice); // Request ID 0
+        vault.redeem(10_000 * 1e6, alice, alice); // Request ID 0
 
         vm.prank(bob);
-        vault.withdraw(30_000 * 1e6, bob, bob);     // Request ID 1
+        vault.redeem(30_000 * 1e6, bob, bob);     // Request ID 1
 
         // Off-chain asset returns 20,000 USDC of available liquidity (50% coverage)
         usdc.transfer(address(epochQueue), 20_000 * 1e6);
@@ -332,5 +332,39 @@ contract VERAVaultComprehensiveTest is Test {
         vm.expectRevert(abi.encodeWithSelector(VERAVault.NotCompliant.selector, alice));
         vault.transfer(bob, 1_000 * 1e6);
         vm.stopPrank();
+    }
+
+    // =========================================================================
+    // 6. THIRD-PARTY ALLOWANCE TESTS
+    // =========================================================================
+
+    function test_ThirdPartyWithdrawRequiresAllowance() public {
+        vm.startPrank(alice);
+        usdc.approve(address(vault), 1_000 * 1e6);
+        vault.deposit(1_000 * 1e6, alice);
+        vm.stopPrank();
+
+        // Bob tries to withdraw Alice's shares without allowance
+        vm.startPrank(bob);
+        vm.expectRevert(abi.encodeWithSelector(IERC20Errors.ERC20InsufficientAllowance.selector, bob, 0, 1_000 * 1e6));
+        vault.withdraw(1_000 * 1e6, bob, alice);
+        vm.stopPrank();
+    }
+
+    function test_ThirdPartyWithdrawWithAllowance() public {
+        vm.startPrank(alice);
+        usdc.approve(address(vault), 1_000 * 1e6);
+        vault.deposit(1_000 * 1e6, alice);
+        // Alice approves Bob to spend her vault shares
+        vault.approve(bob, 1_000 * 1e6);
+        vm.stopPrank();
+
+        // Bob withdraws Alice's shares on her behalf
+        vm.startPrank(bob);
+        vault.withdraw(1_000 * 1e6, bob, alice);
+        vm.stopPrank();
+
+        assertEq(vault.allowance(alice, bob), 0, "Bob's allowance should be consumed");
+        assertEq(vault.balanceOf(alice), 0, "Alice's shares should be burned");
     }
 }

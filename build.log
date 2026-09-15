@@ -1,0 +1,1879 @@
+Warning: lib/forge-std: dependency submodule is missing from .gitmodules
+Warning: lib/openzeppelin-contracts: dependency submodule is missing from .gitmodules
+No files changed, compilation skipped
+note[mixed-case-function]: function names should use mixedCase
+  ╭▸ src/interfaces/IVERAVault.sol:5:14
+  │
+5 │     function currentNAV() external view returns (uint256);
+  │              ━━━━━━━━━━ help: consider using: `currentNav`
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/mixed-case-function
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/EpochQueue.sol:4:8
+  │
+4 │ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/EpochQueue.sol:5:8
+  │
+5 │ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/EpochQueue.sol:6:8
+  │
+6 │ import "@openzeppelin/contracts/access/Ownable.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/libraries/ProofBindingLib.sol:15:17
+   │
+15 │         uint256 targetNAV
+   │                 ━━━━━━━━━ help: consider using: `targetNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/tokens/AssetToken.sol:4:8
+  │
+4 │ import "@openzeppelin/contracts/access/Ownable.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/tokens/AssetToken.sol:5:8
+  │
+5 │ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+  ╭▸ src/interfaces/IVERAVault.sol:9:17
+  │
+9 │         uint256 newNAV,
+  │                 ━━━━━━ help: consider using: `newNav`
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/VERAVault.sol:4:8
+  │
+4 │ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/VERAVault.sol:5:8
+  │
+5 │ import "@openzeppelin/contracts/utils/Pausable.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/VERAVault.sol:6:8
+  │
+6 │ import "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultInvariants.t.sol:4:8
+  │
+4 │ import "forge-std/Test.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultInvariants.t.sol:5:8
+  │
+5 │ import "../../src/core/VERAVault.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultInvariants.t.sol:6:8
+  │
+6 │ import "../../src/core/EpochQueue.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultInvariants.t.sol:7:8
+  │
+7 │ import "../../src/verifier/MockGroth16Verifier.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultInvariants.t.sol:8:8
+  │
+8 │ import "../../src/tokens/MockUSDC.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultInvariants.t.sol:9:8
+  │
+9 │ import "../../src/tokens/AssetToken.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+   ╭▸ test/invariants/VERAVaultInvariants.t.sol:10:8
+   │
+10 │ import "../../src/libraries/ProofBindingLib.sol";
+   │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+   ╭▸ test/invariants/VERAVaultInvariants.t.sol:11:8
+   │
+11 │ import "./VERAVaultHandler.sol";
+   │        ━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/EpochQueue.sol:7:8
+  │
+7 │ import "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/verifier/MockGroth16Verifier.sol:4:8
+  │
+4 │ import "../interfaces/IZKVerifier.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[custom-errors]: prefer using custom errors on revert and require calls
+   ╭▸ src/verifier/MockGroth16Verifier.sol:16:9
+   │
+16 │         require(msg.sender == owner, "Not owner");
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/custom-errors
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ src/core/EpochQueue.sol:32:29
+   │
+32 │     IERC20 public immutable assetToken;
+   │                             ━━━━━━━━━━ help: consider using: `ASSET_TOKEN`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/tokens/MockUSDC.sol:4:8
+  │
+4 │ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/tokens/MockUSDC.sol:5:8
+  │
+5 │ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/tokens/MockUSDC.sol:6:8
+  │
+6 │ import "@openzeppelin/contracts/access/Ownable.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[asm-keccak256]: use of inefficient hashing mechanism; consider using inline assembly
+   ╭▸ src/libraries/ProofBindingLib.sol:17:16
+   │
+17 │         return keccak256(abi.encodePacked(vaultAddress, epochId, chainId, targetNAV));
+   │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/asm-keccak256
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultHandler.sol:4:8
+  │
+4 │ import "forge-std/Test.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultHandler.sol:5:8
+  │
+5 │ import "../../src/core/VERAVault.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultHandler.sol:6:8
+  │
+6 │ import "../../src/core/EpochQueue.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultHandler.sol:7:8
+  │
+7 │ import "../../src/verifier/MockGroth16Verifier.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultHandler.sol:8:8
+  │
+8 │ import "../../src/tokens/MockUSDC.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/invariants/VERAVaultHandler.sol:9:8
+  │
+9 │ import "../../src/tokens/AssetToken.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+   ╭▸ test/invariants/VERAVaultHandler.sol:10:8
+   │
+10 │ import "../../src/libraries/ProofBindingLib.sol";
+   │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ test/invariants/VERAVaultHandler.sol:17:32
+   │
+17 │     VERAVault public immutable vault;
+   │                                ━━━━━ help: consider using: `VAULT`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/VERAVault.t.sol:4:8
+  │
+4 │ import "forge-std/Test.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/VERAVault.t.sol:5:8
+  │
+5 │ import "../src/core/VERAVault.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/VERAVault.t.sol:6:8
+  │
+6 │ import "../src/core/EpochQueue.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/VERAVault.sol:7:8
+  │
+7 │ import "@openzeppelin/contracts/access/Ownable.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/VERAVault.sol:8:8
+  │
+8 │ import "../interfaces/IVERAVault.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[could-be-immutable]: state variable could be declared immutable
+  ╭▸ src/verifier/MockGroth16Verifier.sol:7:20
+  │
+7 │     address public owner;
+  │                    ━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/could-be-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ test/invariants/VERAVaultHandler.sol:18:33
+   │
+18 │     EpochQueue public immutable queue;
+   │                                 ━━━━━ help: consider using: `QUEUE`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ src/core/VERAVault.sol:9:8
+  │
+9 │ import "../interfaces/IZKVerifier.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/VERAVault.t.sol:7:8
+  │
+7 │ import "../src/verifier/MockGroth16Verifier.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ src/tokens/MockUSDC.sol:10:47
+   │
+10 │         _mint(msg.sender, 1_000_000_000 * 10**6);
+   │                                               ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ src/tokens/MockUSDC.sol:14:16
+   │
+14 │         return 6;
+   │                ━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+   ╭▸ src/core/VERAVault.sol:10:8
+   │
+10 │ import "../libraries/ProofBindingLib.sol";
+   │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+   ╭▸ src/core/VERAVault.sol:11:8
+   │
+11 │ import "./EpochQueue.sol";
+   │        ━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/VERAVault.t.sol:8:8
+  │
+8 │ import "../src/tokens/MockUSDC.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ test/invariants/VERAVaultHandler.sol:19:31
+   │
+19 │     MockUSDC public immutable usdc;
+   │                               ━━━━ help: consider using: `USDC`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+  ╭▸ test/VERAVault.t.sol:9:8
+  │
+9 │ import "../src/tokens/AssetToken.sol";
+  │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  │
+  ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/core/VERAVault.sol:29:20
+   │
+29 │     uint256 public currentNAV;
+   │                    ━━━━━━━━━━ help: consider using: `currentNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[unaliased-plain-import]: use named imports '{A, B}' or alias 'import ".." as X'
+   ╭▸ test/VERAVault.t.sol:10:8
+   │
+10 │ import "../src/libraries/ProofBindingLib.sol";
+   │        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unaliased-plain-import
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ test/invariants/VERAVaultHandler.sol:20:42
+   │
+20 │     MockGroth16Verifier public immutable verifier;
+   │                                          ━━━━━━━━ help: consider using: `VERIFIER`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ src/core/VERAVault.sol:34:34
+   │
+34 │     IZKVerifier public immutable verifier;
+   │                                  ━━━━━━━━ help: consider using: `VERIFIER`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ src/core/VERAVault.sol:35:33
+   │
+35 │     EpochQueue public immutable epochQueue;
+   │                                 ━━━━━━━━━━ help: consider using: `EPOCH_QUEUE`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ test/invariants/VERAVaultHandler.sol:21:33
+   │
+21 │     AssetToken public immutable complianceToken;
+   │                                 ━━━━━━━━━━━━━━━ help: consider using: `COMPLIANCE_TOKEN`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+    ╭▸ test/VERAVault.t.sol:108:17
+    │
+108 │         uint256 validNAV = INITIAL_NAV + (INITIAL_NAV * 3 / 100);
+    │                 ━━━━━━━━ help: consider using: `validNav`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ test/invariants/VERAVaultHandler.sol:29:20
+   │
+29 │     uint256 public ghost_expectedTotalDeposits;
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using: `ghostExpectedTotalDeposits`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ test/invariants/VERAVaultHandler.sol:30:20
+   │
+30 │     uint256 public ghost_expectedTotalQueuedShares;
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using: `ghostExpectedTotalQueuedShares`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[screaming-snake-case-immutable]: immutables should use SCREAMING_SNAKE_CASE
+   ╭▸ src/core/VERAVault.sol:36:42
+   │
+36 │     IComplianceRegistry public immutable complianceRegistry;
+   │                                          ━━━━━━━━━━━━━━━━━━ help: consider using: `COMPLIANCE_REGISTRY`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/screaming-snake-case-immutable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+    ╭▸ test/VERAVault.t.sol:124:17
+    │
+124 │         uint256 crashedNAV = INITIAL_NAV - (INITIAL_NAV * 6 / 100);
+    │                 ━━━━━━━━━━ help: consider using: `crashedNav`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/core/VERAVault.sol:38:53
+   │
+38 │     event ValuationUpdated(uint256 epochId, uint256 newNAV, uint256 proofBlockNumber);
+   │                                                     ━━━━━━ help: consider using: `newNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/core/VERAVault.sol:39:48
+   │
+39 │     event CircuitBreakerTriggeredEvent(uint256 oldNAV, uint256 newNAV, uint256 deltaBPS);
+   │                                                ━━━━━━ help: consider using: `oldNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/core/VERAVault.sol:39:64
+   │
+39 │     event CircuitBreakerTriggeredEvent(uint256 oldNAV, uint256 newNAV, uint256 deltaBPS);
+   │                                                                ━━━━━━ help: consider using: `newNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/core/VERAVault.sol:39:80
+   │
+39 │     event CircuitBreakerTriggeredEvent(uint256 oldNAV, uint256 newNAV, uint256 deltaBPS);
+   │                                                                                ━━━━━━━━ help: consider using: `deltaBps`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+    ╭▸ test/VERAVault.t.sol:148:17
+    │
+148 │         uint256 spikedNAV = INITIAL_NAV + (INITIAL_NAV * 6 / 100);
+    │                 ━━━━━━━━━ help: consider using: `spikedNav`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ test/invariants/VERAVaultHandler.sol:31:20
+   │
+31 │     uint256 public ghost_lastValidNAV;
+   │                    ━━━━━━━━━━━━━━━━━━ help: consider using: `ghostLastValidNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ test/invariants/VERAVaultHandler.sol:32:20
+   │
+32 │     uint256 public ghost_currentEpoch;
+   │                    ━━━━━━━━━━━━━━━━━━ help: consider using: `ghostCurrentEpoch`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ test/invariants/VERAVaultHandler.sol:33:20
+   │
+33 │     uint256 public ghost_successfulDeposits;
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━━ help: consider using: `ghostSuccessfulDeposits`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ test/invariants/VERAVaultHandler.sol:34:20
+   │
+34 │     uint256 public ghost_successfulRedeems;
+   │                    ━━━━━━━━━━━━━━━━━━━━━━━ help: consider using: `ghostSuccessfulRedeems`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+   ╭▸ src/core/VERAVault.sol:67:17
+   │
+67 │         uint256 newNAV,
+   │                 ━━━━━━ help: consider using: `newNav`
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+    ╭▸ test/invariants/VERAVaultHandler.sol:106:38
+    │
+106 │     function updateValuation(uint256 newNAVDeltaBps, bool isIncrease) external {
+    │                                      ━━━━━━━━━━━━━━ help: consider using: `newNavDeltaBps`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+    ╭▸ test/invariants/VERAVaultHandler.sol:110:17
+    │
+110 │         uint256 baseNAV = vault.currentNAV() == 0 ? 100_000 * 1e6 : vault.currentNAV();
+    │                 ━━━━━━━ help: consider using: `baseNav`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:67:33
+   │
+67 │         uint256 depositAmount = 10_000 * 1e6;
+   │                                 ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:67:42
+   │
+67 │         uint256 depositAmount = 10_000 * 1e6;
+   │                                          ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:85:39
+   │
+85 │         usdc.transfer(address(vault), 10_000 * 1e6);
+   │                                       ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:85:48
+   │
+85 │         usdc.transfer(address(vault), 10_000 * 1e6);
+   │                                                ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:90:38
+   │
+90 │         usdc.approve(address(vault), 20_000 * 1e6);
+   │                                      ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:90:47
+   │
+90 │         usdc.approve(address(vault), 20_000 * 1e6);
+   │                                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:91:43
+   │
+91 │         uint256 bobShares = vault.deposit(20_000 * 1e6, bob);
+   │                                           ━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ src/core/VERAVault.sol:13:11
+   │
+13 │ interface IComplianceRegistry {
+   │           ━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/VERAVault.t.sol:91:52
+   │
+91 │         uint256 bobShares = vault.deposit(20_000 * 1e6, bob);
+   │                                                    ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:108:57
+    │
+108 │         uint256 validNAV = INITIAL_NAV + (INITIAL_NAV * 3 / 100);
+    │                                                         ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[multi-contract-file]: prefer having only one contract, interface or library per file
+   ╭▸ src/core/VERAVault.sol:21:10
+   │
+21 │ contract VERAVault is ERC4626, Pausable, ReentrancyGuardTransient, Ownable, IVERAVault {
+   │          ━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/multi-contract-file
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:108:61
+    │
+108 │         uint256 validNAV = INITIAL_NAV + (INITIAL_NAV * 3 / 100);
+    │                                                             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:124:59
+    │
+124 │         uint256 crashedNAV = INITIAL_NAV - (INITIAL_NAV * 6 / 100);
+    │                                                           ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:124:63
+    │
+124 │         uint256 crashedNAV = INITIAL_NAV - (INITIAL_NAV * 6 / 100);
+    │                                                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[mixed-case-variable]: mutable variables should use mixedCase
+    ╭▸ test/invariants/VERAVaultHandler.sol:111:17
+    │
+111 │         uint256 calculatedNAV;
+    │                 ━━━━━━━━━━━━━ help: consider using: `calculatedNav`
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/mixed-case-variable
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:136:38
+    │
+136 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:136:46
+    │
+136 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:138:23
+    │
+138 │         vault.deposit(1_000 * 1e6, alice);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:138:31
+    │
+138 │         vault.deposit(1_000 * 1e6, alice);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:148:58
+    │
+148 │         uint256 spikedNAV = INITIAL_NAV + (INITIAL_NAV * 6 / 100);
+    │                                                          ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/invariants/VERAVaultHandler.sol:63:51
+   │
+63 │             usdc.transfer(actors[i], 10_000_000 * 1e6); // 10M USDC each
+   │                                                   ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/invariants/VERAVaultHandler.sol:69:42
+   │
+69 │         usdc.transfer(nonCompliantActor, 1_000_000 * 1e6);
+   │                                          ━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/invariants/VERAVaultHandler.sol:69:54
+   │
+69 │         usdc.transfer(nonCompliantActor, 1_000_000 * 1e6);
+   │                                                      ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/invariants/VERAVaultHandler.sol:78:32
+   │
+78 │         amount = bound(amount, 1e6, 250_000 * 1e6); // 1 - 250,000 USDC
+   │                                ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ test/invariants/VERAVaultHandler.sol:78:47
+   │
+78 │         amount = bound(amount, 1e6, 250_000 * 1e6); // 1 - 250,000 USDC
+   │                                               ━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:148:62
+    │
+148 │         uint256 spikedNAV = INITIAL_NAV + (INITIAL_NAV * 6 / 100);
+    │                                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:193:84
+    │
+193 │         bytes32 skipHash = ProofBindingLib.computeProofBindingHash(address(vault), 3, block.chainid, INITIAL_NAV);
+    │                                                                                    ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:196:81
+    │
+196 │         vault.updateValuationWithProof(abi.encodePacked(skipHash), INITIAL_NAV, 3, block.number);
+    │                                                                                 ━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:206:38
+    │
+206 │         usdc.approve(address(vault), 10_000 * 1e6);
+    │                                      ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:206:47
+    │
+206 │         usdc.approve(address(vault), 10_000 * 1e6);
+    │                                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ src/core/VERAVault.sol:89:44
+   │
+89 │                 ? ((newNAV - currentNAV) * 10000) / currentNAV
+   │                                            ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:207:23
+    │
+207 │         vault.deposit(10_000 * 1e6, alice);
+    │                       ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:207:32
+    │
+207 │         vault.deposit(10_000 * 1e6, alice);
+    │                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:211:38
+    │
+211 │         usdc.approve(address(vault), 30_000 * 1e6);
+    │                                      ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:211:47
+    │
+211 │         usdc.approve(address(vault), 30_000 * 1e6);
+    │                                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:212:23
+    │
+212 │         vault.deposit(30_000 * 1e6, bob);
+    │                       ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:212:32
+    │
+212 │         vault.deposit(30_000 * 1e6, bob);
+    │                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[unwrapped-modifier-logic]: wrap modifier logic to reduce code size
+   ╭▸ src/core/EpochQueue.sol:46:5
+   │
+46 │ ┏     modifier onlyVault() {
+47 │ ┃         if (msg.sender != vault || vault == address(0)) revert OnlyVault();
+48 │ ┃         _;
+49 │ ┃     }
+   │ ┗━━━━━┛
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unwrapped-modifier-logic
+help: wrap modifier logic to reduce code size
+   ╭╴
+46 ±     modifier onlyVault() {
+47 +         _onlyVault();
+48 +         _;
+49 +     }
+50 + 
+51 +     function _onlyVault() internal {
+52 +         if (msg.sender != vault || vault == address(0)) revert OnlyVault();
+53 +     }
+   ╰╴
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:217:24
+    │
+217 │         vault.withdraw(10_000 * 1e6, alice, alice); // Request ID 0
+    │                        ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+   ╭▸ src/core/VERAVault.sol:90:44
+   │
+90 │                 : ((currentNAV - newNAV) * 10000) / currentNAV;
+   │                                            ━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:217:33
+    │
+217 │         vault.withdraw(10_000 * 1e6, alice, alice); // Request ID 0
+    │                                 ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:220:24
+    │
+220 │         vault.withdraw(30_000 * 1e6, bob, bob);     // Request ID 1
+    │                        ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:220:33
+    │
+220 │         vault.withdraw(30_000 * 1e6, bob, bob);     // Request ID 1
+    │                                 ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:223:44
+    │
+223 │         usdc.transfer(address(epochQueue), 20_000 * 1e6);
+    │                                            ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:223:53
+    │
+223 │         usdc.transfer(address(epochQueue), 20_000 * 1e6);
+    │                                                     ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:224:36
+    │
+224 │         epochQueue.processEpoch(0, 20_000 * 1e6);
+    │                                    ━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:224:45
+    │
+224 │         epochQueue.processEpoch(0, 20_000 * 1e6);
+    │                                             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:230:58
+    │
+230 │         assertEq(usdc.balanceOf(alice) - aliceBalBefore, 5_000 * 1e6, "Alice should receive 5k USDC");
+    │                                                          ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:230:66
+    │
+230 │         assertEq(usdc.balanceOf(alice) - aliceBalBefore, 5_000 * 1e6, "Alice should receive 5k USDC");
+    │                                                                  ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:236:63
+    │
+236 │         assertEq(usdc.balanceOf(bob) - bobBalBefore, 15_000 * 1e6, "Bob should receive 15k USDC");
+    │                                                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:241:38
+    │
+241 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:241:46
+    │
+241 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:110:53
+    │
+110 │         uint256 baseNAV = vault.currentNAV() == 0 ? 100_000 * 1e6 : vault.currentNAV();
+    │                                                     ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:242:23
+    │
+242 │         vault.deposit(1_000 * 1e6, alice);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/invariants/VERAVaultInvariants.t.sol:111:9
+    │
+111 │         queue.enqueueRedeem(attacker, 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:242:31
+    │
+242 │         vault.deposit(1_000 * 1e6, alice);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:110:63
+    │
+110 │         uint256 baseNAV = vault.currentNAV() == 0 ? 100_000 * 1e6 : vault.currentNAV();
+    │                                                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:243:24
+    │
+243 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │                        ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[unwrapped-modifier-logic]: wrap modifier logic to reduce code size
+   ╭▸ src/core/EpochQueue.sol:51:5
+   │
+51 │ ┏     modifier onlyVaultOrOwner() {
+52 │ ┃         if (msg.sender != vault && msg.sender != owner()) revert OnlyVault();
+53 │ ┃         _;
+54 │ ┃     }
+   │ ┗━━━━━┛
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unwrapped-modifier-logic
+help: wrap modifier logic to reduce code size
+   ╭╴
+51 ±     modifier onlyVaultOrOwner() {
+52 +         _onlyVaultOrOwner();
+53 +         _;
+54 +     }
+55 + 
+56 +     function _onlyVaultOrOwner() internal {
+57 +         if (msg.sender != vault && msg.sender != owner()) revert OnlyVault();
+58 +     }
+   ╰╴
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:243:32
+    │
+243 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:246:44
+    │
+246 │         usdc.transfer(address(epochQueue), 1_000 * 1e6);
+    │                                            ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:246:52
+    │
+246 │         usdc.transfer(address(epochQueue), 1_000 * 1e6);
+    │                                                    ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:247:36
+    │
+247 │         epochQueue.processEpoch(0, 1_000 * 1e6);
+    │                                    ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:247:44
+    │
+247 │         epochQueue.processEpoch(0, 1_000 * 1e6);
+    │                                            ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:261:38
+    │
+261 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:261:46
+    │
+261 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:262:23
+    │
+262 │         vault.deposit(1_000 * 1e6, alice);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:262:31
+    │
+262 │         vault.deposit(1_000 * 1e6, alice);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:263:24
+    │
+263 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │                        ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:263:32
+    │
+263 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:273:38
+    │
+273 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:273:46
+    │
+273 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:274:23
+    │
+274 │         vault.deposit(1_000 * 1e6, alice);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:114:69
+    │
+114 │             calculatedNAV = baseNAV + ((baseNAV * newNAVDeltaBps) / 10000);
+    │                                                                     ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[non-reentrant-not-first]: `nonReentrant` should be the first modifier
+   ╭▸ src/core/EpochQueue.sol:73:77
+   │
+73 │     function enqueueRedeem(address user, uint256 shares) external onlyVault nonReentrant returns (uint256) {
+   │                                                                             ━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/non-reentrant-not-first
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:116:69
+    │
+116 │             calculatedNAV = baseNAV - ((baseNAV * newNAVDeltaBps) / 10000);
+    │                                                                     ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:119:49
+    │
+119 │         if (calculatedNAV == 0) calculatedNAV = 1e6;
+    │                                                 ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:142:35
+    │
+142 │         shares = bound(shares, 1, 100_000 * 1e6);
+    │                                   ━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/invariants/VERAVaultHandler.sol:142:45
+    │
+142 │         shares = bound(shares, 1, 100_000 * 1e6);
+    │                                             ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:274:31
+    │
+274 │         vault.deposit(1_000 * 1e6, alice);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:275:24
+    │
+275 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │                        ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:275:32
+    │
+275 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │                                ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:278:44
+    │
+278 │         usdc.transfer(address(epochQueue), 1_000 * 1e6);
+    │                                            ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:278:52
+    │
+278 │         usdc.transfer(address(epochQueue), 1_000 * 1e6);
+    │                                                    ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:279:36
+    │
+279 │         epochQueue.processEpoch(0, 1_000 * 1e6);
+    │                                    ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:279:44
+    │
+279 │         epochQueue.processEpoch(0, 1_000 * 1e6);
+    │                                            ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:292:44
+    │
+292 │         epochQueue.enqueueRedeem(attacker, 1_000 * 1e6);
+    │                                            ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:292:52
+    │
+292 │         epochQueue.enqueueRedeem(attacker, 1_000 * 1e6);
+    │                                                    ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:302:38
+    │
+302 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:302:46
+    │
+302 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:306:23
+    │
+306 │         vault.deposit(5_000 * 1e6, attacker);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:306:31
+    │
+306 │         vault.deposit(5_000 * 1e6, attacker);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:312:38
+    │
+312 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:312:46
+    │
+312 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:313:23
+    │
+313 │         vault.deposit(5_000 * 1e6, alice);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:313:31
+    │
+313 │         vault.deposit(5_000 * 1e6, alice);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:317:34
+    │
+317 │         vault.transfer(attacker, 1_000 * 1e6);
+    │                                  ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:317:42
+    │
+317 │         vault.transfer(attacker, 1_000 * 1e6);
+    │                                          ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:323:38
+    │
+323 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │                                      ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:323:46
+    │
+323 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │                                              ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:324:23
+    │
+324 │         vault.deposit(5_000 * 1e6, alice);
+    │                       ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:324:31
+    │
+324 │         vault.deposit(5_000 * 1e6, alice);
+    │                               ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:333:29
+    │
+333 │         vault.transfer(bob, 1_000 * 1e6);
+    │                             ━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+note[literal-instead-of-constant]: this literal appears multiple times in the contract; declare a named constant for it
+    ╭▸ test/VERAVault.t.sol:333:37
+    │
+333 │         vault.transfer(bob, 1_000 * 1e6);
+    │                                     ━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/literal-instead-of-constant
+
+warning[calls-loop]: external call inside a loop
+   ╭▸ test/invariants/VERAVaultHandler.sol:62:13
+   │
+62 │             complianceToken.setCompliance(actors[i], true);
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/calls-loop
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+   ╭▸ src/core/VERAVault.sol:93:17
+   │
+93 │                 emit CircuitBreakerTriggeredEvent(currentNAV, newNAV, delta);
+   │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[calls-loop]: external call inside a loop
+   ╭▸ test/invariants/VERAVaultHandler.sol:63:13
+   │
+63 │             usdc.transfer(actors[i], 10_000_000 * 1e6); // 10M USDC each
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/calls-loop
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ src/core/VERAVault.sol:103:9
+    │
+103 │         emit ValuationUpdated(epochId, newNAV, proofBlockNumber);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[missing-zero-check]: address parameter is used in a state write or value transfer without a zero-address check
+   ╭▸ test/invariants/VERAVaultHandler.sol:47:9
+   │
+47 │         address _owner
+   │         ━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/missing-zero-check
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/invariants/VERAVaultHandler.sol:63:13
+   │
+63 │             usdc.transfer(actors[i], 10_000_000 * 1e6); // 10M USDC each
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/invariants/VERAVaultHandler.sol:69:9
+   │
+69 │         usdc.transfer(nonCompliantActor, 1_000_000 * 1e6);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ test/invariants/VERAVaultHandler.sol:81:9
+   │
+81 │         usdc.approve(address(vault), amount);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/VERAVault.t.sol:56:9
+   │
+56 │         usdc.transfer(alice, INITIAL_BALANCE);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/VERAVault.t.sol:57:9
+   │
+57 │         usdc.transfer(bob, INITIAL_BALANCE);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/VERAVault.t.sol:58:9
+   │
+58 │         usdc.transfer(charlie, INITIAL_BALANCE);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/VERAVault.t.sol:59:9
+   │
+59 │         usdc.transfer(attacker, INITIAL_BALANCE);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ src/core/VERAVault.sol:130:9
+    │
+130 │         emit Withdraw(_msgSender(), receiver, owner, assets, shares);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ src/core/VERAVault.sol:129:9
+    │
+129 │         epochQueue.enqueueRedeem(receiver, shares);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ test/VERAVault.t.sol:69:9
+   │
+69 │         usdc.approve(address(vault), depositAmount);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ src/core/VERAVault.sol:145:9
+    │
+145 │         emit Withdraw(_msgSender(), receiver, owner, assets, shares);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ test/VERAVault.t.sol:81:9
+   │
+81 │         usdc.approve(address(vault), 1);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ test/VERAVault.t.sol:82:9
+   │
+82 │         vault.deposit(1, alice);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+   ╭▸ test/VERAVault.t.sol:85:9
+   │
+85 │         usdc.transfer(address(vault), 10_000 * 1e6);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[unused-return]: Return value of an external call is not used
+   ╭▸ test/VERAVault.t.sol:90:9
+   │
+90 │         usdc.approve(address(vault), 20_000 * 1e6);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ src/core/VERAVault.sol:144:9
+    │
+144 │         epochQueue.enqueueRedeem(receiver, shares);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:136:9
+    │
+136 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:138:9
+    │
+138 │         vault.deposit(1_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:206:9
+    │
+206 │         usdc.approve(address(vault), 10_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:207:9
+    │
+207 │         vault.deposit(10_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:211:9
+    │
+211 │         usdc.approve(address(vault), 30_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:212:9
+    │
+212 │         vault.deposit(30_000 * 1e6, bob);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:217:9
+    │
+217 │         vault.withdraw(10_000 * 1e6, alice, alice); // Request ID 0
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:220:9
+    │
+220 │         vault.withdraw(30_000 * 1e6, bob, bob);     // Request ID 1
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ test/VERAVault.t.sol:223:9
+    │
+223 │         usdc.transfer(address(epochQueue), 20_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:241:9
+    │
+241 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:242:9
+    │
+242 │         vault.deposit(1_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:243:9
+    │
+243 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ test/VERAVault.t.sol:246:9
+    │
+246 │         usdc.transfer(address(epochQueue), 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:261:9
+    │
+261 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:262:9
+    │
+262 │         vault.deposit(1_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:263:9
+    │
+263 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:273:9
+    │
+273 │         usdc.approve(address(vault), 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:274:9
+    │
+274 │         vault.deposit(1_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:275:9
+    │
+275 │         vault.withdraw(1_000 * 1e6, alice, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ test/VERAVault.t.sol:278:9
+    │
+278 │         usdc.transfer(address(epochQueue), 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:292:9
+    │
+292 │         epochQueue.enqueueRedeem(attacker, 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:302:9
+    │
+302 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:306:9
+    │
+306 │         vault.deposit(5_000 * 1e6, attacker);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:312:9
+    │
+312 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:313:9
+    │
+313 │         vault.deposit(5_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ test/VERAVault.t.sol:317:9
+    │
+317 │         vault.transfer(attacker, 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:323:9
+    │
+323 │         usdc.approve(address(vault), 5_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[unused-return]: Return value of an external call is not used
+    ╭▸ test/VERAVault.t.sol:324:9
+    │
+324 │         vault.deposit(5_000 * 1e6, alice);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/unused-return
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ test/VERAVault.t.sol:333:9
+    │
+333 │         vault.transfer(bob, 1_000 * 1e6);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/erc20-unchecked-transfer
+
+note[missing-inheritance]: contract `AssetToken` implements interface `IComplianceRegistry`'s external API but does not explicitly inherit from it
+   ╭▸ src/tokens/AssetToken.sol:11:10
+   │
+11 │ contract AssetToken is Ownable, ERC20 {
+   │          ━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/missing-inheritance
+
+note[modifier-used-only-once]: this modifier is used only once; consider inlining its checks into the function
+   ╭▸ src/core/EpochQueue.sol:46:5
+   │
+46 │     modifier onlyVault() {
+   │     ━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/modifier-used-only-once
+
+note[modifier-used-only-once]: this modifier is used only once; consider inlining its checks into the function
+   ╭▸ src/core/EpochQueue.sol:51:5
+   │
+51 │     modifier onlyVaultOrOwner() {
+   │     ━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/modifier-used-only-once
+

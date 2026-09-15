@@ -123,11 +123,14 @@ contract VERAVault is ERC4626, Pausable, ReentrancyGuardTransient, Ownable, IVER
         address owner
     ) public override nonReentrant whenNotPaused returns (uint256) {
         uint256 shares = previewWithdraw(assets);
-        _spendAllowance(owner, _msgSender(), shares);
+        address caller = _msgSender();
+        if (caller != owner) {
+            _spendAllowance(owner, caller, shares);
+        }
         _burn(owner, shares);
 
         epochQueue.enqueueRedeem(receiver, shares);
-        emit Withdraw(_msgSender(), receiver, owner, assets, shares);
+        emit Withdraw(caller, receiver, owner, assets, shares);
         return shares;
     }
 
@@ -138,11 +141,14 @@ contract VERAVault is ERC4626, Pausable, ReentrancyGuardTransient, Ownable, IVER
         address owner
     ) public override nonReentrant whenNotPaused returns (uint256) {
         uint256 assets = previewRedeem(shares);
-        _spendAllowance(owner, _msgSender(), shares);
+        address caller = _msgSender();
+        if (caller != owner) {
+            _spendAllowance(owner, caller, shares);
+        }
         _burn(owner, shares);
 
         epochQueue.enqueueRedeem(receiver, shares);
-        emit Withdraw(_msgSender(), receiver, owner, assets, shares);
+        emit Withdraw(caller, receiver, owner, assets, shares);
         return assets;
     }
 
