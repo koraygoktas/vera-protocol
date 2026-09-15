@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERA Protocol - Verifiable Evaluated Real-World Assets</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VERA Protocol</h1>
+            <p>Verifiable Evaluated Real-World Assets</p>
+            <button id="connectWallet" class="btn btn-primary">Connect Wallet</button>
+            <div id="walletInfo" class="wallet-info hidden">
+                <span id="walletAddress"></span>
+                <button id="disconnectWallet" class="btn btn-secondary">Disconnect</button>
+            </div>
+        </header>
+
+        <div id="notification" class="notification hidden"></div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2>Protocol Status</h2>
+                <div class="stat">
+                    <span class="label">Current NAV:</span>
+                    <span id="currentNAV" class="value">0 USDC</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Current Epoch:</span>
+                    <span id="currentEpoch" class="value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Liquid Reserve:</span>
+                    <span id="liquidReserve" class="value">0 USDC</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Share Price:</span>
+                    <span id="sharePrice" class="value">1.00 USDC</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Total Assets:</span>
+                    <span id="totalAssets" class="value">0 USDC</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Vault Status:</span>
+                    <span id="vaultStatus" class="value status-active">Active</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>User Operations</h2>
+                <div class="stat">
+                    <span class="label">Compliance Status:</span>
+                    <span id="complianceStatus" class="value status-unknown">Unknown</span>
+                </div>
+                <div class="stat">
+                    <span class="label">USDC Balance:</span>
+                    <span id="usdcBalance" class="value">0 USDC</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Vault Shares:</span>
+                    <span id="vaultShares" class="value">0 VERA</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="depositAmount">Deposit Amount (USDC)</label>
+                    <input type="number" id="depositAmount" placeholder="Enter amount" min="0">
+                    <button id="depositBtn" class="btn btn-primary">Deposit</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="withdrawAmount">Withdraw Amount (USDC)</label>
+                    <input type="number" id="withdrawAmount" placeholder="Enter amount" min="0">
+                    <button id="withdrawBtn" class="btn btn-secondary">Request Withdraw</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Async Withdrawal (Epoch Queue)</h2>
+                <div class="stat">
+                    <span class="label">Pending Requests:</span>
+                    <span id="pendingRequests" class="value">0</span>
+                </div>
+                <div id="withdrawalQueue" class="queue-list">
+                    <p class="empty-state">No pending withdrawal requests</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>ZK-ML Valuation Simulator</h2>
+                <div class="form-group">
+                    <label for="newNAV">New NAV Value (USDC)</label>
+                    <input type="number" id="newNAV" placeholder="Enter new NAV" min="0">
+                    <button id="updateValuationBtn" class="btn btn-primary">Update Valuation</button>
+                </div>
+                <div class="form-group">
+                    <label for="newEpoch">New Epoch ID</label>
+                    <input type="number" id="newEpoch" placeholder="Enter epoch ID" min="0">
+                </div>
+                <div class="info-box">
+                    <p>This simulates the ZK-ML valuation update process. In production, this would use actual ZK proofs from off-chain ML models.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Admin Controls</h2>
+                <div class="form-group">
+                    <label for="epochProcessId">Process Epoch ID</label>
+                    <input type="number" id="epochProcessId" placeholder="Enter epoch ID" min="0">
+                    <label for="availableLiquidity">Available Liquidity (USDC)</label>
+                    <input type="number" id="availableLiquidity" placeholder="Enter liquidity" min="0">
+                    <button id="processEpochBtn" class="btn btn-secondary">Process Epoch</button>
+                </div>
+                <div class="form-group">
+                    <label for="epochSetId">Set Current Epoch</label>
+                    <input type="number" id="epochSetId" placeholder="Enter epoch ID" min="0">
+                    <button id="setEpochBtn" class="btn btn-secondary">Set Epoch</button>
+                </div>
+                <div class="admin-controls">
+                    <button id="pauseBtn" class="btn btn-danger">Pause Vault</button>
+                    <button id="unpauseBtn" class="btn btn-success">Unpause Vault</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>VERA Protocol Demo - ZK-based RWA Tokenization</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-6.7.0.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
