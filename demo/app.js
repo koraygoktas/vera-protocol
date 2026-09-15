@@ -1,581 +1,1107 @@
-// VERA Protocol Demo - Web3 Interface
-// This demo uses Ethers.js v6 and MetaMask for blockchain interaction
+// ============================================================================
+// VERA Protocol - Web3 Application & Simulation Engine
+// Built for ERC-4626 Vault, ZK-ML Valuation, and Async EpochQueue
+// ============================================================================
 
-class VERAProtocol {
+// 1. CONFIGURABLE CONTRACT ADDRESSES
+// Adjust these addresses to target local Anvil, Hardhat, Sepolia, or Mainnet deployments.
+const CONTRACT_ADDRESSES = {
+    vault: "0xa0Cb889707d426A7A386870A03bc70d1b0697598",
+    epochQueue: "0xc7183455a4C133Ae270771860664b6B7ec320bB1",
+    usdc: "0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f",
+    compliance: "0xF62849F9A0B5Bf2913b396098F7c7019b51A820a",
+    verifier: "0x2e234DAe75C793f67A35089C9d99245E1C58470b"
+};
+
+// 2. CONTRACT ABIS (Synchronized with contracts under src/)
+const VAULT_ABI = [
+    "function currentNAV() view returns (uint256)",
+    "function currentEpoch() view returns (uint256)",
+    "function MAX_NAV_DELTA_BPS() view returns (uint256)",
+    "function PROOF_DEADLINE() view returns (uint256)",
+    "function totalAssets() view returns (uint256)",
+    "function totalSupply() view returns (uint256)",
+    "function balanceOf(address account) view returns (uint256)",
+    "function allowance(address owner, address spender) view returns (uint256)",
+    "function approve(address spender, uint256 amount) returns (bool)",
+    "function paused() view returns (bool)",
+    "function owner() view returns (address)",
+    "function asset() view returns (address)",
+    "function epochQueue() view returns (address)",
+    "function complianceRegistry() view returns (address)",
+    "function deposit(uint256 assets, address receiver) returns (uint256)",
+    "function mint(uint256 shares, address receiver) returns (uint256)",
+    "function withdraw(uint256 assets, address receiver, address owner) returns (uint256)",
+    "function redeem(uint256 shares, address receiver, address owner) returns (uint256)",
+    "function previewDeposit(uint256 assets) view returns (uint256)",
+    "function previewWithdraw(uint256 assets) view returns (uint256)",
+    "function previewRedeem(uint256 shares) view returns (uint256)",
+    "function convertToShares(uint256 assets) view returns (uint256)",
+    "function convertToAssets(uint256 shares) view returns (uint256)",
+    "function updateValuationWithProof(bytes proof, uint256 newNAV, uint256 epochId, uint256 proofBlockNumber)",
+    "function pause()",
+    "function unpause()"
+];
+
+const EPOCH_QUEUE_ABI = [
+    "function nextRequestId() view returns (uint256)",
+    "function currentEpoch() view returns (uint256)",
+    "function vault() view returns (address)",
+    "function assetToken() view returns (address)",
+    "function owner() view returns (address)",
+    "function epochTotalShares(uint256 epochId) view returns (uint256)",
+    "function epochAllocatedLiquidity(uint256 epochId) view returns (uint256)",
+    "function requests(uint256 requestId) view returns (address user, uint256 shares, uint256 epochRequested, bool claimed)",
+    "function getRequest(uint256 requestId) view returns (tuple(address user, uint256 shares, uint256 epochRequested, bool claimed))",
+    "function enqueueRedeem(address user, uint256 shares) returns (uint256)",
+    "function processEpoch(uint256 epochId, uint256 availableLiquidity)",
+    "function setCurrentEpoch(uint256 _epoch)",
+    "function claim(uint256 requestId)"
+];
+
+const USDC_ABI = [
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)",
+    "function balanceOf(address account) view returns (uint256)",
+    "function allowance(address owner, address spender) view returns (uint256)",
+    "function approve(address spender, uint256 amount) returns (bool)",
+    "function transfer(address to, uint256 amount) returns (bool)"
+];
+
+const COMPLIANCE_ABI = [
+    "function isCompliant(address target) view returns (bool)",
+    "function setCompliance(address target, bool status)",
+    "function owner() view returns (address)"
+];
+
+// ============================================================================
+// MAIN APPLICATION CLASS
+// ============================================================================
+class VERAProtocolApp {
     constructor() {
         this.provider = null;
         this.signer = null;
-        this.contracts = {};
         this.userAddress = null;
+        this.chainId = 31337; // Default Anvil/Local chain ID
+        this.isLiveWeb3 = false;
+        
+        this.contracts = {};
         this.pollingInterval = null;
-        this.MAX_NAV_DELTA_BPS = 500; // 5%
-        this.PROOF_DEADLINE = 50; // 50 blocks
+        
+        // Protocol Constants
+        this.MAX_NAV_DELTA_BPS = 500; // 5.00%
+        this.PROOF_DEADLINE = 50;     // 50 blocks
+        this.DECIMALS = 6;            // USDC & Vault decimals
+        
+        this.activeRedeemMode = "redeem"; // "redeem" (shares) or "withdraw" (assets)
+
+        // Realistic Simulated In-Memory State
+        this.state = {
+            currentNAV: ethers.parseUnits("50000", 6),       // 50,000 USDC RWA NAV
+            currentEpoch: 1,
+            liquidReserve: ethers.parseUnits("10000", 6),    // 10,000 USDC in vault
+            totalAssets: ethers.parseUnits("60000", 6),      // 60,000 USDC total
+            totalSupply: ethers.parseUnits("50000", 6),      // 50,000 VERA shares
+            paused: false,
+            
+            // User state
+            userUsdcBalance: ethers.parseUnits("10000", 6),  // 10,000 USDC
+            userVaultShares: ethers.parseUnits("1000", 6),   // 1,000 VERA
+            isCompliant: true,
+            
+            // EpochQueue state
+            nextRequestId: 3,
+            epochTotalShares: {
+                0: ethers.parseUnits("40000", 6),
+                1: ethers.parseUnits("1000", 6)
+            },
+            epochAllocatedLiquidity: {
+                0: ethers.parseUnits("20000", 6), // 50% coverage
+                1: 0n                             // Unsettled
+            },
+            requests: [
+                {
+                    id: 0,
+                    user: "0xA11CE00000000000000000000000000000000000",
+                    shares: ethers.parseUnits("10000", 6),
+                    epochRequested: 0,
+                    claimed: true
+                },
+                {
+                    id: 1,
+                    user: "0xB0B0000000000000000000000000000000000000",
+                    shares: ethers.parseUnits("30000", 6),
+                    epochRequested: 0,
+                    claimed: false
+                },
+                {
+                    id: 2,
+                    user: "0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496",
+                    shares: ethers.parseUnits("1000", 6),
+                    epochRequested: 1,
+                    claimed: false
+                }
+            ]
+        };
     }
 
-    // Initialize the application
+    // ------------------------------------------------------------------------
+    // Initialization
+    // ------------------------------------------------------------------------
     async init() {
+        this.initAddressInputs();
         this.setupEventListeners();
-        this.checkWalletConnection();
+        this.updateZKSimulatorPreview();
+        this.updateUI();
+
+        // Check if MetaMask is available and already connected
+        if (window.ethereum) {
+            try {
+                const accounts = await window.ethereum.request({ method: "eth_accounts" });
+                if (accounts.length > 0) {
+                    await this.connectWallet();
+                }
+            } catch (err) {
+                console.warn("Auto wallet connection check skipped:", err);
+            }
+        }
     }
 
-    // Setup event listeners
-    setupEventListeners() {
-        document.getElementById('connectWallet').addEventListener('click', () => this.connectWallet());
-        document.getElementById('disconnectWallet').addEventListener('click', () => this.disconnectWallet());
-        document.getElementById('depositBtn').addEventListener('click', () => this.deposit());
-        document.getElementById('withdrawBtn').addEventListener('click', () => this.withdraw());
-        document.getElementById('updateValuationBtn').addEventListener('click', () => this.updateValuation());
-        document.getElementById('processEpochBtn').addEventListener('click', () => this.processEpoch());
-        document.getElementById('setEpochBtn').addEventListener('click', () => this.setEpoch());
-        document.getElementById('pauseBtn').addEventListener('click', () => this.pauseVault());
-        document.getElementById('unpauseBtn').addEventListener('click', () => this.unpauseVault());
+    initAddressInputs() {
+        const cfgVault = document.getElementById("cfgVault");
+        const cfgQueue = document.getElementById("cfgQueue");
+        const cfgUsdc = document.getElementById("cfgUsdc");
+        const cfgCompliance = document.getElementById("cfgCompliance");
+        const cfgVerifier = document.getElementById("cfgVerifier");
 
-        // Event delegation for claim buttons
-        document.getElementById('withdrawalQueue').addEventListener('click', (e) => {
-            if (e.target.classList.contains('claim-btn')) {
-                const requestId = parseInt(e.target.dataset.requestId);
-                this.claimWithdrawal(requestId);
+        if (cfgVault) cfgVault.value = CONTRACT_ADDRESSES.vault;
+        if (cfgQueue) cfgQueue.value = CONTRACT_ADDRESSES.epochQueue;
+        if (cfgUsdc) cfgUsdc.value = CONTRACT_ADDRESSES.usdc;
+        if (cfgCompliance) cfgCompliance.value = CONTRACT_ADDRESSES.compliance;
+        if (cfgVerifier) cfgVerifier.value = CONTRACT_ADDRESSES.verifier;
+    }
+
+    // ------------------------------------------------------------------------
+    // Event Listeners
+    // ------------------------------------------------------------------------
+    setupEventListeners() {
+        // Wallet connection
+        document.getElementById("connectWallet")?.addEventListener("click", () => this.connectWallet());
+        document.getElementById("disconnectWallet")?.addEventListener("click", () => this.disconnectWallet());
+
+        // Address Config Drawer
+        document.getElementById("toggleConfigBtn")?.addEventListener("click", () => {
+            const drawer = document.getElementById("configDrawer");
+            drawer.classList.toggle("hidden");
+        });
+
+        document.getElementById("saveConfigBtn")?.addEventListener("click", () => this.saveAddressConfig());
+        document.getElementById("resetConfigBtn")?.addEventListener("click", () => this.resetAddressConfig());
+
+        // Developer tools (Faucet & KYC toggle)
+        document.getElementById("faucetBtn")?.addEventListener("click", () => this.mintFaucetUSDC());
+        document.getElementById("toggleKycBtn")?.addEventListener("click", () => this.toggleCompliance());
+
+        // Core Vault actions
+        document.getElementById("depositBtn")?.addEventListener("click", () => this.handleDeposit());
+        document.getElementById("withdrawBtn")?.addEventListener("click", () => this.handleRedeemOrWithdraw());
+
+        // Tabs: Redeem shares vs Withdraw assets
+        const tabRedeem = document.getElementById("tabRedeem");
+        const tabWithdraw = document.getElementById("tabWithdraw");
+
+        tabRedeem?.addEventListener("click", () => {
+            this.activeRedeemMode = "redeem";
+            tabRedeem.classList.add("active");
+            tabWithdraw.classList.remove("active");
+            document.getElementById("withdrawInputLabel").textContent = "Redeem Share Amount";
+            document.getElementById("withdrawSymbol").textContent = "VERA";
+            document.getElementById("withdrawAmount").placeholder = "0.00";
+            document.getElementById("withdrawBtn").textContent = "Enqueue Redemption (VERA Shares)";
+        });
+
+        tabWithdraw?.addEventListener("click", () => {
+            this.activeRedeemMode = "withdraw";
+            tabWithdraw.classList.add("active");
+            tabRedeem.classList.remove("active");
+            document.getElementById("withdrawInputLabel").textContent = "Withdraw Asset Amount";
+            document.getElementById("withdrawSymbol").textContent = "USDC";
+            document.getElementById("withdrawAmount").placeholder = "0.00";
+            document.getElementById("withdrawBtn").textContent = "Enqueue Withdrawal (USDC Assets)";
+        });
+
+        // Quick Percentage buttons (25%, 50%, 100%)
+        document.querySelectorAll(".pct-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const targetId = e.target.dataset.target;
+                const pct = parseInt(e.target.dataset.pct, 10);
+                this.applyPercentageInput(targetId, pct);
+            });
+        });
+
+        // Dynamic deposit preview calculation
+        document.getElementById("depositAmount")?.addEventListener("input", (e) => {
+            const amount = parseFloat(e.target.value) || 0;
+            const previewEl = document.getElementById("depositPreviewShares");
+            if (previewEl) {
+                const sharePrice = this.calculateSharePrice();
+                const expectedShares = sharePrice > 0 ? (amount / sharePrice).toFixed(4) : amount.toFixed(4);
+                previewEl.textContent = `${expectedShares} VERA`;
             }
         });
 
-        // Listen for account changes
+        // ZK Valuation inputs & real-time Circuit Breaker deviation meter
+        document.getElementById("newNAV")?.addEventListener("input", () => this.updateZKSimulatorPreview());
+        document.getElementById("updateValuationBtn")?.addEventListener("click", () => this.handleUpdateValuation());
+
+        // Admin Epoch Settlement & Pausing
+        document.getElementById("processEpochBtn")?.addEventListener("click", () => this.handleProcessEpoch());
+        document.getElementById("pauseBtn")?.addEventListener("click", () => this.handlePauseVault(true));
+        document.getElementById("unpauseBtn")?.addEventListener("click", () => this.handlePauseVault(false));
+
+        // Queue claim delegation
+        document.getElementById("withdrawalQueue")?.addEventListener("click", (e) => {
+            const btn = e.target.closest(".claim-btn");
+            if (btn) {
+                const reqId = parseInt(btn.dataset.requestId, 10);
+                this.handleClaim(reqId);
+            }
+        });
+
+        // MetaMask chain/account listeners
         if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
+            window.ethereum.on("accountsChanged", (accounts) => {
                 if (accounts.length === 0) {
                     this.disconnectWallet();
                 } else {
                     this.userAddress = accounts[0];
                     this.updateWalletUI();
-                    this.loadUserData();
+                    this.refreshBlockchainData();
                 }
             });
 
-            window.ethereum.on('chainChanged', () => {
+            window.ethereum.on("chainChanged", () => {
                 window.location.reload();
             });
         }
     }
 
-    // Check if wallet is already connected
-    async checkWalletConnection() {
-        if (window.ethereum) {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (accounts.length > 0) {
-                    this.userAddress = accounts[0];
-                    this.provider = new ethers.BrowserProvider(window.ethereum);
-                    this.signer = await this.provider.getSigner();
-                    this.updateWalletUI();
-                    await this.loadContracts();
-                    this.startPolling();
-                }
-            } catch (error) {
-                console.error('Error checking wallet connection:', error);
-            }
-        }
-    }
-
-    // Connect to MetaMask
+    // ------------------------------------------------------------------------
+    // Wallet & Web3 Management
+    // ------------------------------------------------------------------------
     async connectWallet() {
         if (!window.ethereum) {
-            this.showNotification('MetaMask not installed. Please install MetaMask to use this demo.', 'error');
+            this.showNotification("MetaMask not detected. Running in Interactive Simulation Mode.", "warning");
+            this.userAddress = "0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496";
+            this.updateWalletUI();
+            this.updateUI();
             return;
         }
 
         try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            this.userAddress = accounts[0];
             this.provider = new ethers.BrowserProvider(window.ethereum);
+            const accounts = await this.provider.send("eth_requestAccounts", []);
             this.signer = await this.provider.getSigner();
+            this.userAddress = accounts[0];
+
+            const network = await this.provider.getNetwork();
+            this.chainId = Number(network.chainId);
+
+            // Verify if contracts are deployed at configured addresses
+            await this.detectLiveContracts();
 
             this.updateWalletUI();
-            await this.loadContracts();
-            this.startPolling();
+            this.showNotification(
+                this.isLiveWeb3 
+                    ? `Connected to on-chain contracts on Chain ID ${this.chainId}!` 
+                    : `Connected as ${this.formatAddress(this.userAddress)} (Simulation Mode - Deploy contracts to enable full Web3 execution)`,
+                "success"
+            );
 
-            this.showNotification('Wallet connected successfully!', 'success');
+            this.updateUI();
+            this.startPolling();
         } catch (error) {
-            console.error('Error connecting wallet:', error);
-            this.showNotification('Failed to connect wallet: ' + error.message, 'error');
+            console.error("Wallet connection error:", error);
+            this.showNotification("Failed to connect wallet: " + (error.shortMessage || error.message), "error");
         }
     }
 
-    // Disconnect wallet
     disconnectWallet() {
         this.userAddress = null;
         this.provider = null;
         this.signer = null;
+        this.isLiveWeb3 = false;
         this.contracts = {};
         this.stopPolling();
         this.updateWalletUI();
-        this.showNotification('Wallet disconnected', 'success');
+        this.updateUI();
+        this.showNotification("Wallet disconnected. Returned to default simulator state.", "info");
     }
 
-    // Update wallet UI
+    async detectLiveContracts() {
+        try {
+            const vaultCode = await this.provider.getCode(CONTRACT_ADDRESSES.vault);
+            if (vaultCode && vaultCode !== "0x" && vaultCode !== "0x0") {
+                // Live contracts exist on chain!
+                this.contracts.vault = new ethers.Contract(CONTRACT_ADDRESSES.vault, VAULT_ABI, this.signer);
+                this.contracts.epochQueue = new ethers.Contract(CONTRACT_ADDRESSES.epochQueue, EPOCH_QUEUE_ABI, this.signer);
+                this.contracts.usdc = new ethers.Contract(CONTRACT_ADDRESSES.usdc, USDC_ABI, this.signer);
+                this.contracts.compliance = new ethers.Contract(CONTRACT_ADDRESSES.compliance, COMPLIANCE_ABI, this.signer);
+                this.isLiveWeb3 = true;
+                await this.refreshBlockchainData();
+            } else {
+                this.isLiveWeb3 = false;
+            }
+        } catch (e) {
+            console.warn("Could not reach on-chain contracts, continuing in simulation mode:", e);
+            this.isLiveWeb3 = false;
+        }
+    }
+
     updateWalletUI() {
-        const connectBtn = document.getElementById('connectWallet');
-        const walletInfo = document.getElementById('walletInfo');
-        const walletAddress = document.getElementById('walletAddress');
+        const connectBtn = document.getElementById("connectWallet");
+        const walletInfo = document.getElementById("walletInfo");
+        const walletAddress = document.getElementById("walletAddress");
+        const modeBadge = document.getElementById("appModeBadge");
+        const modeText = document.getElementById("appModeText");
 
         if (this.userAddress) {
-            connectBtn.classList.add('hidden');
-            walletInfo.classList.remove('hidden');
-            walletAddress.textContent = `${this.userAddress.substring(0, 6)}...${this.userAddress.substring(38)}`;
+            connectBtn?.classList.add("hidden");
+            walletInfo?.classList.remove("hidden");
+            if (walletAddress) walletAddress.textContent = this.formatAddress(this.userAddress);
         } else {
-            connectBtn.classList.remove('hidden');
-            walletInfo.classList.add('hidden');
+            connectBtn?.classList.remove("hidden");
+            walletInfo?.classList.add("hidden");
+        }
+
+        if (modeBadge && modeText) {
+            if (this.isLiveWeb3) {
+                modeText.textContent = `Live Web3 (Chain ${this.chainId})`;
+                modeBadge.style.borderColor = "rgba(16, 185, 129, 0.4)";
+                modeBadge.style.color = "#34d399";
+            } else {
+                modeText.textContent = "Simulation Mode";
+                modeBadge.style.borderColor = "rgba(99, 102, 241, 0.3)";
+                modeBadge.style.color = "#c7d2fe";
+            }
         }
     }
 
-    // Load smart contracts
-    async loadContracts() {
-        // In a real deployment, these would be the actual deployed contract addresses
-        // For demo purposes, we'll use placeholder addresses
-        const contractAddresses = {
-            vault: '0x0000000000000000000000000000000000000001', // Replace with actual vault address
-            usdc: '0x0000000000000000000000000000000000000002', // Replace with actual USDC address
-            verifier: '0x0000000000000000000000000000000000000003', // Replace with actual verifier address
-            epochQueue: '0x0000000000000000000000000000000000000004' // Replace with actual epoch queue address
-        };
+    // ------------------------------------------------------------------------
+    // Address Configuration Management
+    // ------------------------------------------------------------------------
+    saveAddressConfig() {
+        CONTRACT_ADDRESSES.vault = document.getElementById("cfgVault").value.trim();
+        CONTRACT_ADDRESSES.epochQueue = document.getElementById("cfgQueue").value.trim();
+        CONTRACT_ADDRESSES.usdc = document.getElementById("cfgUsdc").value.trim();
+        CONTRACT_ADDRESSES.compliance = document.getElementById("cfgCompliance").value.trim();
+        CONTRACT_ADDRESSES.verifier = document.getElementById("cfgVerifier").value.trim();
 
-        // Contract ABIs (simplified for demo)
-        const vaultABI = [
-            'function currentNAV() view returns (uint256)',
-            'function currentEpoch() view returns (uint256)',
-            'function totalAssets() view returns (uint256)',
-            'function totalSupply() view returns (uint256)',
-            'function balanceOf(address) view returns (uint256)',
-            'function paused() view returns (bool)',
-            'function deposit(uint256 assets, address receiver) returns (uint256)',
-            'function withdraw(uint256 assets, address receiver, address owner) returns (uint256)',
-            'function updateValuationWithProof(bytes proof, uint256 newNAV, uint256 epochId, uint256 proofBlockNumber)',
-            'function processEpoch(uint256 epochId, uint256 availableLiquidity)',
-            'function setEpochQueueEpoch(uint256 epochId)',
-            'function pause()',
-            'function unpause()'
-        ];
+        document.getElementById("configDrawer").classList.add("hidden");
+        this.showNotification("Contract addresses updated! Re-evaluating connection...", "info");
 
-        const usdcABI = [
-            'function balanceOf(address) view returns (uint256)',
-            'function decimals() view returns (uint8)',
-            'function approve(address spender, uint256 amount) returns (bool)',
-            'function allowance(address owner, address spender) view returns (uint256)'
-        ];
-
-        const epochQueueABI = [
-            'function nextRequestId() view returns (uint256)',
-            'function currentEpoch() view returns (uint256)',
-            'function getRequest(uint256 requestId) view returns (tuple(address user, uint256 shares, uint256 epochRequested, bool claimed))',
-            'function claim(uint256 requestId)'
-        ];
-
-        try {
-            // In demo mode, we'll use mock data since contracts aren't deployed
-            this.showNotification('Demo mode: Using mock data since contracts are not deployed', 'warning');
-            this.loadMockData();
-        } catch (error) {
-            console.error('Error loading contracts:', error);
-            this.showNotification('Failed to load contracts: ' + error.message, 'error');
-        }
-    }
-
-    // Load mock data for demo purposes
-    loadMockData() {
-        this.mockData = {
-            currentNAV: ethers.parseUnits('50000', 6), // 50,000 USDC
-            currentEpoch: 1,
-            liquidReserve: ethers.parseUnits('10000', 6), // 10,000 USDC
-            totalAssets: ethers.parseUnits('60000', 6), // 60,000 USDC
-            totalSupply: ethers.parseUnits('50000', 6), // 50,000 shares
-            paused: false,
-            userBalance: ethers.parseUnits('1000', 6), // 1,000 USDC
-            userShares: ethers.parseUnits('500', 6), // 500 shares
-            isCompliant: true,
-            pendingRequests: [
-                { id: 0, user: '0x123...456', shares: ethers.parseUnits('100', 6), epoch: 1, claimed: false },
-                { id: 1, user: '0x789...012', shares: ethers.parseUnits('50', 6), epoch: 1, claimed: false }
-            ]
-        };
-
-        this.updateDashboard();
-    }
-
-    // Update dashboard with current data
-    updateDashboard() {
-        if (!this.mockData) return;
-
-        const nav = ethers.formatUnits(this.mockData.currentNAV, 6);
-        const epoch = this.mockData.currentEpoch;
-        const liquid = ethers.formatUnits(this.mockData.liquidReserve, 6);
-        const totalAssets = ethers.formatUnits(this.mockData.totalAssets, 6);
-        const totalSupply = ethers.formatUnits(this.mockData.totalSupply, 6);
-        const sharePrice = this.mockData.totalSupply > 0
-            ? (parseFloat(totalAssets) / parseFloat(totalSupply)).toFixed(6)
-            : '1.00';
-
-        document.getElementById('currentNAV').textContent = `${nav} USDC`;
-        document.getElementById('currentEpoch').textContent = epoch;
-        document.getElementById('liquidReserve').textContent = `${liquid} USDC`;
-        document.getElementById('sharePrice').textContent = `${sharePrice} USDC`;
-        document.getElementById('totalAssets').textContent = `${totalAssets} USDC`;
-
-        const statusEl = document.getElementById('vaultStatus');
-        if (this.mockData.paused) {
-            statusEl.textContent = 'Paused';
-            statusEl.className = 'value status-paused';
+        if (this.provider) {
+            this.detectLiveContracts().then(() => this.updateUI());
         } else {
-            statusEl.textContent = 'Active';
-            statusEl.className = 'value status-active';
+            this.updateUI();
         }
-
-        // Update user data
-        const userBalance = ethers.formatUnits(this.mockData.userBalance, 6);
-        const userShares = ethers.formatUnits(this.mockData.userShares, 6);
-
-        document.getElementById('usdcBalance').textContent = `${userBalance} USDC`;
-        document.getElementById('vaultShares').textContent = `${userShares} VERA`;
-
-        const complianceEl = document.getElementById('complianceStatus');
-        if (this.mockData.isCompliant) {
-            complianceEl.textContent = 'Compliant';
-            complianceEl.className = 'value status-compliant';
-        } else {
-            complianceEl.textContent = 'Non-Compliant';
-            complianceEl.className = 'value status-non-compliant';
-        }
-
-        // Update withdrawal queue
-        this.updateWithdrawalQueue();
     }
 
-    // Update withdrawal queue display
-    updateWithdrawalQueue() {
-        const queueList = document.getElementById('withdrawalQueue');
-        const pendingCount = this.mockData.pendingRequests.length;
+    resetAddressConfig() {
+        CONTRACT_ADDRESSES.vault = "0xa0Cb889707d426A7A386870A03bc70d1b0697598";
+        CONTRACT_ADDRESSES.epochQueue = "0xc7183455a4C133Ae270771860664b6B7ec320bB1";
+        CONTRACT_ADDRESSES.usdc = "0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f";
+        CONTRACT_ADDRESSES.compliance = "0xF62849F9A0B5Bf2913b396098F7c7019b51A820a";
+        CONTRACT_ADDRESSES.verifier = "0x2e234DAe75C793f67A35089C9d99245E1C58470b";
 
-        document.getElementById('pendingRequests').textContent = pendingCount;
+        this.initAddressInputs();
+        this.showNotification("Reset contract addresses to defaults.", "info");
+    }
 
-        if (pendingCount === 0) {
-            queueList.innerHTML = '<p class="empty-state">No pending withdrawal requests</p>';
+    // ------------------------------------------------------------------------
+    // Developer & Sandbox Tools
+    // ------------------------------------------------------------------------
+    async mintFaucetUSDC() {
+        const faucetAmount = ethers.parseUnits("10000", 6);
+        if (this.isLiveWeb3 && this.contracts.usdc) {
+            try {
+                this.showNotification("Submitting faucet transaction...", "info");
+                // Attempt standard mint or transfer if supported
+                const tx = await this.contracts.usdc.transfer(this.userAddress, faucetAmount);
+                await tx.wait();
+                this.showNotification("Transferred 10,000 USDC to your wallet!", "success");
+                await this.refreshBlockchainData();
+                return;
+            } catch (err) {
+                console.warn("Live faucet transfer failed, updating simulation balance:", err);
+            }
+        }
+
+        // Simulation Mode fallback
+        this.state.userUsdcBalance += faucetAmount;
+        this.updateUI();
+        this.showNotification("Minted 10,000.00 USDC in simulation wallet!", "success");
+    }
+
+    async toggleCompliance() {
+        const targetAddress = this.userAddress || "0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496";
+        const newStatus = !this.state.isCompliant;
+
+        if (this.isLiveWeb3 && this.contracts.compliance) {
+            try {
+                this.showNotification(`Setting compliance on-chain for ${this.formatAddress(targetAddress)} to ${newStatus}...`, "info");
+                const tx = await this.contracts.compliance.setCompliance(targetAddress, newStatus);
+                await tx.wait();
+                this.showNotification(`On-chain compliance updated: ${newStatus ? "COMPLIANT" : "RESTRICTED"}`, "success");
+                await this.refreshBlockchainData();
+                return;
+            } catch (err) {
+                console.warn("On-chain setCompliance failed (may require contract owner):", err);
+                this.showNotification("On-chain compliance call failed (only owner can modify whitelist). Toggled in simulator.", "warning");
+            }
+        }
+
+        this.state.isCompliant = newStatus;
+        this.updateUI();
+        this.showNotification(`Wallet compliance set to: ${newStatus ? "COMPLIANT (Whitelisted)" : "NON-COMPLIANT (Blocked)"}`, newStatus ? "success" : "warning");
+    }
+
+    applyPercentageInput(targetId, pct) {
+        let maxVal = 0;
+        if (targetId === "depositAmount") {
+            maxVal = parseFloat(ethers.formatUnits(this.state.userUsdcBalance, 6));
+        } else if (targetId === "withdrawAmount") {
+            if (this.activeRedeemMode === "redeem") {
+                maxVal = parseFloat(ethers.formatUnits(this.state.userVaultShares, 6));
+            } else {
+                const sharePrice = this.calculateSharePrice();
+                const totalAssetValue = parseFloat(ethers.formatUnits(this.state.userVaultShares, 6)) * sharePrice;
+                maxVal = totalAssetValue;
+            }
+        }
+
+        const calculated = (maxVal * (pct / 100)).toFixed(2);
+        const input = document.getElementById(targetId);
+        if (input) {
+            input.value = calculated > 0 ? calculated : "";
+            input.dispatchEvent(new Event("input"));
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // Core Vault Flows (Deposit & Redeem/Withdraw)
+    // ------------------------------------------------------------------------
+    async handleDeposit() {
+        const input = document.getElementById("depositAmount");
+        const valStr = input?.value.trim();
+        if (!valStr || parseFloat(valStr) <= 0) {
+            this.showNotification("Please specify a valid deposit amount.", "error");
             return;
         }
 
-        queueList.innerHTML = this.mockData.pendingRequests.map(req => {
-            const shares = ethers.formatUnits(req.shares, 6);
-            const isClaimable = !req.claimed && req.epoch < this.mockData.currentEpoch;
-            const claimableClass = isClaimable ? 'claimable' : '';
-            const claimButton = isClaimable
-                ? `<button class="btn btn-success claim-btn" data-request-id="${req.id}">Claim</button>`
-                : '';
-
-            return `
-                <div class="queue-item ${claimableClass}">
-                    <div class="queue-info">
-                        <span>Request #${req.id}</span>
-                        <span>${shares} USDC</span>
-                    </div>
-                    <div class="queue-details">
-                        User: ${req.user} | Epoch: ${req.epoch} | Status: ${req.claimed ? 'Claimed' : 'Pending'}
-                    </div>
-                    ${claimButton}
-                </div>
-            `;
-        }).join('');
-    }
-
-    // Deposit USDC into vault
-    async deposit() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
+        if (!this.state.isCompliant) {
+            this.showNotification("Regulatory Error: Address is not compliant (Whitelisting required by AssetToken).", "error");
             return;
         }
 
-        const amountInput = document.getElementById('depositAmount');
-        const amount = amountInput.value;
+        if (this.state.paused) {
+            this.showNotification("Vault Paused: Deposits are temporarily frozen.", "error");
+            return;
+        }
 
-        if (!amount || amount <= 0) {
-            this.showNotification('Please enter a valid deposit amount', 'error');
+        const amount = ethers.parseUnits(valStr, 6);
+        if (amount > this.state.userUsdcBalance) {
+            this.showNotification("Insufficient USDC balance.", "error");
             return;
         }
 
         try {
-            this.showNotification('Processing deposit...', 'info');
+            if (this.isLiveWeb3 && this.contracts.vault && this.contracts.usdc) {
+                this.showNotification("Checking USDC allowance...", "info");
+                const allowance = await this.contracts.usdc.allowance(this.userAddress, CONTRACT_ADDRESSES.vault);
+                if (allowance < amount) {
+                    this.showNotification("Approving USDC spend for VERAVault...", "info");
+                    const approveTx = await this.contracts.usdc.approve(CONTRACT_ADDRESSES.vault, ethers.MaxUint256);
+                    await approveTx.wait();
+                }
 
-            // Simulate deposit in demo mode
-            const depositAmount = ethers.parseUnits(amount, 6);
-            this.mockData.userBalance -= depositAmount;
-            this.mockData.liquidReserve += depositAmount;
-            this.mockData.totalAssets += depositAmount;
-            this.mockData.userShares += depositAmount;
-            this.mockData.totalSupply += depositAmount;
+                this.showNotification("Executing deposit on VERAVault...", "info");
+                const depositTx = await this.contracts.vault.deposit(amount, this.userAddress);
+                await depositTx.wait();
 
-            this.updateDashboard();
-            amountInput.value = '';
-            this.showNotification(`Successfully deposited ${amount} USDC!`, 'success');
-        } catch (error) {
-            console.error('Deposit error:', error);
-            this.showNotification('Deposit failed: ' + error.message, 'error');
-        }
-    }
-
-    // Request withdrawal
-    async withdraw() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
-            return;
-        }
-
-        const amountInput = document.getElementById('withdrawAmount');
-        const amount = amountInput.value;
-
-        if (!amount || amount <= 0) {
-            this.showNotification('Please enter a valid withdrawal amount', 'error');
-            return;
-        }
-
-        try {
-            this.showNotification('Processing withdrawal request...', 'info');
-
-            // Simulate withdrawal in demo mode
-            const withdrawAmount = ethers.parseUnits(amount, 6);
-            if (withdrawAmount > this.mockData.userShares) {
-                this.showNotification('Insufficient vault shares', 'error');
+                this.showNotification(`Successfully deposited ${valStr} USDC on-chain!`, "success");
+                input.value = "";
+                await this.refreshBlockchainData();
                 return;
             }
 
-            this.mockData.userShares -= withdrawAmount;
-            this.mockData.totalSupply -= withdrawAmount;
-            this.mockData.pendingRequests.push({
-                id: this.mockData.pendingRequests.length,
-                user: `${this.userAddress.substring(0, 6)}...${this.userAddress.substring(38)}`,
-                shares: withdrawAmount,
-                epoch: this.mockData.currentEpoch,
+            // Simulator Deposit Flow
+            const sharePrice = this.calculateSharePrice();
+            const sharesToMint = ethers.parseUnits((parseFloat(valStr) / sharePrice).toFixed(6), 6);
+
+            this.state.userUsdcBalance -= amount;
+            this.state.liquidReserve += amount;
+            this.state.totalAssets += amount;
+            this.state.userVaultShares += sharesToMint;
+            this.state.totalSupply += sharesToMint;
+
+            input.value = "";
+            document.getElementById("depositPreviewShares").textContent = "0.00 VERA";
+            this.showNotification(`Successfully deposited ${valStr} USDC and minted ${ethers.formatUnits(sharesToMint, 6)} VERA shares!`, "success");
+            this.updateUI();
+        } catch (error) {
+            console.error("Deposit execution error:", error);
+            this.showNotification("Deposit failed: " + (error.shortMessage || error.message), "error");
+        }
+    }
+
+    async handleRedeemOrWithdraw() {
+        const input = document.getElementById("withdrawAmount");
+        const valStr = input?.value.trim();
+        if (!valStr || parseFloat(valStr) <= 0) {
+            this.showNotification("Please enter an amount to exit.", "error");
+            return;
+        }
+
+        if (this.state.paused) {
+            this.showNotification("Vault Paused: Withdrawals and redemptions are paused.", "error");
+            return;
+        }
+
+        const inputVal = ethers.parseUnits(valStr, 6);
+        let sharesToBurn;
+        let requestedAssetsPreview;
+
+        if (this.activeRedeemMode === "redeem") {
+            sharesToBurn = inputVal;
+            if (sharesToBurn > this.state.userVaultShares) {
+                this.showNotification("Insufficient VERA shares.", "error");
+                return;
+            }
+            requestedAssetsPreview = (parseFloat(valStr) * this.calculateSharePrice()).toFixed(2);
+        } else {
+            // Withdraw by USDC assets requested
+            const sharePrice = this.calculateSharePrice();
+            sharesToBurn = ethers.parseUnits((parseFloat(valStr) / sharePrice).toFixed(6), 6);
+            if (sharesToBurn > this.state.userVaultShares) {
+                this.showNotification("Requested withdrawal amount exceeds your available share balance value.", "error");
+                return;
+            }
+            requestedAssetsPreview = valStr;
+        }
+
+        try {
+            const userAddr = this.userAddress || "0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496";
+
+            if (this.isLiveWeb3 && this.contracts.vault) {
+                this.showNotification(
+                    this.activeRedeemMode === "redeem"
+                        ? `Calling vault.redeem(${ethers.formatUnits(sharesToBurn, 6)} shares)...`
+                        : `Calling vault.withdraw(${valStr} USDC)...`,
+                    "info"
+                );
+
+                // Note: user burning their own shares requires NO allowance (caller == owner)
+                let tx;
+                if (this.activeRedeemMode === "redeem") {
+                    tx = await this.contracts.vault.redeem(sharesToBurn, userAddr, userAddr);
+                } else {
+                    tx = await this.contracts.vault.withdraw(inputVal, userAddr, userAddr);
+                }
+                await tx.wait();
+
+                this.showNotification("Redemption request enqueued in EpochQueue on-chain!", "success");
+                input.value = "";
+                await this.refreshBlockchainData();
+                return;
+            }
+
+            // Simulator Async Exit Flow
+            this.state.userVaultShares -= sharesToBurn;
+            this.state.totalSupply -= sharesToBurn;
+
+            // Enqueue ticket into EpochQueue for current epoch
+            const newReqId = this.state.nextRequestId++;
+            const currentEp = this.state.currentEpoch;
+
+            this.state.requests.unshift({
+                id: newReqId,
+                user: userAddr,
+                shares: sharesToBurn,
+                epochRequested: currentEp,
                 claimed: false
             });
 
-            this.updateDashboard();
-            amountInput.value = '';
-            this.showNotification(`Withdrawal request created for ${amount} USDC!`, 'success');
+            // Update epoch shares queued
+            this.state.epochTotalShares[currentEp] = (this.state.epochTotalShares[currentEp] || 0n) + sharesToBurn;
+
+            input.value = "";
+            this.showNotification(
+                `Redemption request #${newReqId} enqueued for Epoch ${currentEp}! (~${requestedAssetsPreview} USDC equivalent queued)`,
+                "success"
+            );
+            this.updateUI();
         } catch (error) {
-            console.error('Withdrawal error:', error);
-            this.showNotification('Withdrawal failed: ' + error.message, 'error');
+            console.error("Redemption error:", error);
+            this.showNotification("Redemption request failed: " + (error.shortMessage || error.message), "error");
         }
     }
 
-    // Claim withdrawal
-    async claimWithdrawal(requestId) {
+    // ------------------------------------------------------------------------
+    // Claiming from EpochQueue
+    // ------------------------------------------------------------------------
+    async handleClaim(requestId) {
         try {
-            this.showNotification('Processing claim...', 'info');
+            const req = this.state.requests.find(r => r.id === requestId);
+            if (!req) return;
 
-            // Simulate claim in demo mode
-            const request = this.mockData.pendingRequests.find(req => req.id === requestId);
-            if (request && !request.claimed) {
-                request.claimed = true;
-                this.mockData.liquidReserve -= request.shares;
-                this.mockData.userBalance += request.shares;
-                this.updateDashboard();
-                this.showNotification('Successfully claimed withdrawal!', 'success');
+            if (req.claimed) {
+                this.showNotification("This ticket has already been claimed.", "warning");
+                return;
             }
+
+            const epochId = req.epochRequested;
+            const allocatedLiquidity = this.state.epochAllocatedLiquidity[epochId] || 0n;
+
+            if (allocatedLiquidity === 0n) {
+                this.showNotification(`Epoch ${epochId} has not been processed with liquidity yet.`, "error");
+                return;
+            }
+
+            if (this.isLiveWeb3 && this.contracts.epochQueue) {
+                this.showNotification(`Claiming ticket #${requestId} on-chain...`, "info");
+                const tx = await this.contracts.epochQueue.claim(requestId);
+                await tx.wait();
+                this.showNotification(`Ticket #${requestId} claimed successfully!`, "success");
+                await this.refreshBlockchainData();
+                return;
+            }
+
+            // Simulator Claim Calculation: (shares * allocatedLiquidity) / totalSharesInEpoch
+            const totalSharesInEpoch = this.state.epochTotalShares[epochId] || req.shares;
+            const payout = (req.shares * allocatedLiquidity) / totalSharesInEpoch;
+
+            req.claimed = true;
+            this.state.userUsdcBalance += payout;
+
+            const payoutStr = ethers.formatUnits(payout, 6);
+            this.showNotification(`Successfully claimed ${payoutStr} USDC for ticket #${requestId}!`, "success");
+            this.updateUI();
         } catch (error) {
-            console.error('Claim error:', error);
-            this.showNotification('Claim failed: ' + error.message, 'error');
+            console.error("Claim error:", error);
+            this.showNotification("Claim failed: " + (error.shortMessage || error.message), "error");
         }
     }
 
-    // Update valuation with ZK proof simulation
-    async updateValuation() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
+    // ------------------------------------------------------------------------
+    // ZK-ML Valuation Simulator & Circuit Breaker Logic
+    // ------------------------------------------------------------------------
+    updateZKSimulatorPreview() {
+        const navInput = document.getElementById("newNAV");
+        const epochInput = document.getElementById("newEpoch");
+        const deltaText = document.getElementById("deltaBpsText");
+        const meterBar = document.getElementById("meterBar");
+        const proofHashDisplay = document.getElementById("proofBindingHashDisplay");
+        const circuitNotice = document.getElementById("circuitBreakerNotice");
+
+        if (epochInput && !epochInput.value) {
+            epochInput.value = this.state.currentEpoch + 1;
+        }
+
+        const newNavStr = navInput?.value.trim();
+        const currentNavNum = parseFloat(ethers.formatUnits(this.state.currentNAV, 6)) || 50000;
+        const newNavNum = parseFloat(newNavStr) || currentNavNum;
+
+        const deltaPct = ((newNavNum - currentNavNum) / currentNavNum) * 100;
+        const deltaBps = Math.round(Math.abs(deltaPct) * 100);
+
+        if (deltaText) {
+            const sign = deltaPct >= 0 ? "+" : "";
+            deltaText.textContent = `${sign}${deltaPct.toFixed(2)}% (${sign}${deltaBps} bps)`;
+        }
+
+        const fillWidth = Math.min((deltaBps / 1000) * 100, 100);
+        if (meterBar) {
+            meterBar.style.width = `${fillWidth}%`;
+            if (deltaBps > this.MAX_NAV_DELTA_BPS) {
+                meterBar.style.backgroundColor = "var(--danger)";
+            } else if (deltaBps > 300) {
+                meterBar.style.backgroundColor = "var(--warning)";
+            } else {
+                meterBar.style.backgroundColor = "var(--success)";
+            }
+        }
+
+        if (circuitNotice) {
+            if (deltaBps > this.MAX_NAV_DELTA_BPS) {
+                circuitNotice.textContent = "⚠️ CIRCUIT BREAKER WILL TRIGGER (> 5.00% Deviation)";
+                circuitNotice.className = "proof-v text-danger";
+            } else {
+                circuitNotice.textContent = "Safe: Within Monotonic Circuit Bounds (≤ 5.00%)";
+                circuitNotice.className = "proof-v text-success";
+            }
+        }
+
+        // Simulate Proof Binding Hash: keccak256(vaultAddress, epochId, chainId, targetNAV)
+        try {
+            const targetEpoch = parseInt(epochInput?.value, 10) || (this.state.currentEpoch + 1);
+            const targetNavWei = ethers.parseUnits(newNavNum.toString(), 6);
+            const vaultAddr = CONTRACT_ADDRESSES.vault;
+
+            const bindingHash = ethers.solidityPackedKeccak256(
+                ["address", "uint256", "uint256", "uint256"],
+                [vaultAddr, targetEpoch, this.chainId, targetNavWei]
+            );
+
+            if (proofHashDisplay) {
+                proofHashDisplay.textContent = bindingHash;
+            }
+        } catch (e) {
+            if (proofHashDisplay) proofHashDisplay.textContent = "0x...";
+        }
+    }
+
+    async handleUpdateValuation() {
+        const navInput = document.getElementById("newNAV");
+        const epochInput = document.getElementById("newEpoch");
+        const newNavStr = navInput?.value.trim();
+        const newEpochStr = epochInput?.value.trim();
+
+        if (!newNavStr || parseFloat(newNavStr) <= 0) {
+            this.showNotification("Please provide a valid NAV amount.", "error");
             return;
         }
 
-        const navInput = document.getElementById('newNAV');
-        const epochInput = document.getElementById('newEpoch');
-        const newNAV = navInput.value;
-        const newEpoch = epochInput.value;
-
-        if (!newNAV || newNAV <= 0) {
-            this.showNotification('Please enter a valid NAV value', 'error');
+        const newEpochId = parseInt(newEpochStr, 10);
+        if (newEpochId !== this.state.currentEpoch + 1) {
+            this.showNotification(`InvalidEpoch: Epoch sequencing must be strictly sequential (Must be ${this.state.currentEpoch + 1})`, "error");
             return;
         }
 
-        if (!newEpoch || newEpoch <= 0) {
-            this.showNotification('Please enter a valid epoch ID', 'error');
+        const currentNavNum = parseFloat(ethers.formatUnits(this.state.currentNAV, 6));
+        const newNavNum = parseFloat(newNavStr);
+        const deltaBps = Math.round(Math.abs(((newNavNum - currentNavNum) / currentNavNum) * 10000));
+
+        // Circuit Breaker Check
+        if (deltaBps > this.MAX_NAV_DELTA_BPS) {
+            this.state.paused = true;
+            this.updateUI();
+            this.showNotification(
+                `🚨 CIRCUIT BREAKER TRIGGERED! NAV delta of ${(deltaBps / 100).toFixed(2)}% exceeds 5.00% max threshold. Vault has been PAUSED to protect protocol solvency!`,
+                "error"
+            );
             return;
         }
 
         try {
-            this.showNotification('Processing valuation update...', 'info');
+            const newNavWei = ethers.parseUnits(newNavStr, 6);
 
-            const newNAVValue = ethers.parseUnits(newNAV, 6);
-            const newEpochId = parseInt(newEpoch);
-
-            // Check circuit breaker
-            if (this.mockData.currentNAV > 0) {
-                const delta = Math.abs(
-                    (parseFloat(newNAV) - parseFloat(ethers.formatUnits(this.mockData.currentNAV, 6))) /
-                    parseFloat(ethers.formatUnits(this.mockData.currentNAV, 6)) * 10000
+            if (this.isLiveWeb3 && this.contracts.vault) {
+                this.showNotification("Generating simulated Groth16 proof binding on-chain...", "info");
+                
+                const bindingHash = ethers.solidityPackedKeccak256(
+                    ["address", "uint256", "uint256", "uint256"],
+                    [CONTRACT_ADDRESSES.vault, newEpochId, this.chainId, newNavWei]
                 );
+                const blockNum = await this.provider.getBlockNumber();
 
-                if (delta > this.MAX_NAV_DELTA_BPS) {
-                    this.mockData.paused = true;
-                    this.updateDashboard();
-                    this.showNotification(
-                        `CIRCUIT BREAKER TRIGGERED! NAV change of ${(delta / 100).toFixed(2)}% exceeds 5% limit. Vault paused.`,
-                        'error'
-                    );
-                    return;
-                }
+                const tx = await this.contracts.vault.updateValuationWithProof(
+                    bindingHash,
+                    newNavWei,
+                    newEpochId,
+                    blockNum
+                );
+                await tx.wait();
+
+                this.showNotification(`Valuation updated on-chain for Epoch ${newEpochId}!`, "success");
+                navInput.value = "";
+                await this.refreshBlockchainData();
+                return;
             }
 
-            // Update valuation in demo mode
-            this.mockData.currentNAV = newNAVValue;
-            this.mockData.currentEpoch = newEpochId;
-            this.mockData.totalAssets = this.mockData.liquidReserve + newNAVValue;
+            // Simulator Update
+            this.state.currentNAV = newNavWei;
+            this.state.currentEpoch = newEpochId;
+            this.state.totalAssets = this.state.liquidReserve + newNavWei;
 
-            this.updateDashboard();
-            navInput.value = '';
-            epochInput.value = '';
-            this.showNotification(`Valuation updated to ${newNAV} USDC for epoch ${newEpoch}!`, 'success');
+            navInput.value = "";
+            epochInput.value = this.state.currentEpoch + 1;
+
+            this.showNotification(`Valuation successfully updated to ${newNavStr} USDC for Epoch ${newEpochId}!`, "success");
+            this.updateZKSimulatorPreview();
+            this.updateUI();
         } catch (error) {
-            console.error('Valuation update error:', error);
-            this.showNotification('Valuation update failed: ' + error.message, 'error');
+            console.error("Valuation update failed:", error);
+            this.showNotification("Valuation update failed: " + (error.shortMessage || error.message), "error");
         }
     }
 
-    // Process epoch
-    async processEpoch() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
+    // ------------------------------------------------------------------------
+    // Admin Controls
+    // ------------------------------------------------------------------------
+    async handleProcessEpoch() {
+        const epInput = document.getElementById("epochProcessId");
+        const liqInput = document.getElementById("availableLiquidity");
+
+        const epochId = parseInt(epInput?.value.trim(), 10);
+        const liquidityStr = liqInput?.value.trim();
+
+        if (isNaN(epochId) || epochId < 0) {
+            this.showNotification("Please specify a valid epoch ID to settle.", "error");
             return;
         }
 
-        const epochIdInput = document.getElementById('epochProcessId');
-        const liquidityInput = document.getElementById('availableLiquidity');
-        const epochId = epochIdInput.value;
-        const liquidity = liquidityInput.value;
-
-        if (!epochId || epochId < 0) {
-            this.showNotification('Please enter a valid epoch ID', 'error');
+        if (!liquidityStr || parseFloat(liquidityStr) <= 0) {
+            this.showNotification("Please specify the available liquidity to return.", "error");
             return;
         }
 
-        if (!liquidity || liquidity < 0) {
-            this.showNotification('Please enter valid liquidity amount', 'error');
-            return;
-        }
+        const liquidityWei = ethers.parseUnits(liquidityStr, 6);
 
         try {
-            this.showNotification('Processing epoch...', 'info');
+            if (this.isLiveWeb3 && this.contracts.epochQueue) {
+                this.showNotification(`Calling epochQueue.processEpoch(${epochId}, ${liquidityStr} USDC)...`, "info");
+                const tx = await this.contracts.epochQueue.processEpoch(epochId, liquidityWei);
+                await tx.wait();
 
-            // Simulate epoch processing in demo mode
-            const epochIdNum = parseInt(epochId);
-            const liquidityAmount = ethers.parseUnits(liquidity, 6);
+                this.showNotification(`Epoch ${epochId} settled with ${liquidityStr} USDC liquidity!`, "success");
+                epInput.value = "";
+                liqInput.value = "";
+                await this.refreshBlockchainData();
+                return;
+            }
 
-            // Mark requests in this epoch as claimable
-            this.mockData.pendingRequests.forEach(req => {
-                if (req.epoch === epochIdNum && !req.claimed) {
-                    // They can now be claimed
-                }
-            });
+            // Simulator Processing
+            this.state.epochAllocatedLiquidity[epochId] = liquidityWei;
+            epInput.value = "";
+            liqInput.value = "";
 
-            this.updateDashboard();
-            epochIdInput.value = '';
-            liquidityInput.value = '';
-            this.showNotification(`Epoch ${epochId} processed with ${liquidity} USDC liquidity!`, 'success');
+            this.showNotification(
+                `Epoch ${epochId} settled! Allocated ${liquidityStr} USDC liquidity to EpochQueue. Eligible tickets can now be claimed.`,
+                "success"
+            );
+            this.updateUI();
         } catch (error) {
-            console.error('Epoch processing error:', error);
-            this.showNotification('Epoch processing failed: ' + error.message, 'error');
+            console.error("Epoch processing error:", error);
+            this.showNotification("Epoch settlement failed: " + (error.shortMessage || error.message), "error");
         }
     }
 
-    // Set current epoch
-    async setEpoch() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
+    async handlePauseVault(freeze) {
+        try {
+            if (this.isLiveWeb3 && this.contracts.vault) {
+                this.showNotification(freeze ? "Pausing vault on-chain..." : "Unpausing vault on-chain...", "info");
+                const tx = freeze ? await this.contracts.vault.pause() : await this.contracts.vault.unpause();
+                await tx.wait();
+                this.showNotification(freeze ? "Vault paused on-chain!" : "Vault unpaused on-chain!", "success");
+                await this.refreshBlockchainData();
+                return;
+            }
+
+            this.state.paused = freeze;
+            this.updateUI();
+            this.showNotification(
+                freeze ? "Vault operation PAUSED (Deposits and Withdrawals frozen)" : "Vault resumed (ACTIVE)",
+                freeze ? "warning" : "success"
+            );
+        } catch (error) {
+            console.error("Pause toggle error:", error);
+            this.showNotification("Failed to toggle pause status: " + (error.shortMessage || error.message), "error");
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // UI Rendering & Dashboard Sync
+    // ------------------------------------------------------------------------
+    calculateSharePrice() {
+        const totalA = parseFloat(ethers.formatUnits(this.state.totalAssets, 6));
+        const totalS = parseFloat(ethers.formatUnits(this.state.totalSupply, 6));
+        if (totalS <= 0 || totalA <= 0) return 1.0;
+        return totalA / totalS;
+    }
+
+    updateUI() {
+        // Metrics
+        const navFmt = ethers.formatUnits(this.state.currentNAV, 6);
+        const liquidFmt = ethers.formatUnits(this.state.liquidReserve, 6);
+        const totalAssetsFmt = ethers.formatUnits(this.state.totalAssets, 6);
+        const totalSharesFmt = ethers.formatUnits(this.state.totalSupply, 6);
+        const sharePriceNum = this.calculateSharePrice();
+
+        const currentNavEl = document.getElementById("currentNAV");
+        const currentEpochEl = document.getElementById("currentEpoch");
+        const liquidReserveEl = document.getElementById("liquidReserve");
+        const totalAssetsEl = document.getElementById("totalAssets");
+        const totalSupplyEl = document.getElementById("totalSupply");
+        const sharePriceEl = document.getElementById("sharePrice");
+        const vaultStatusEl = document.getElementById("vaultStatus");
+
+        if (currentNavEl) currentNavEl.textContent = `${this.formatNumber(navFmt)} USDC`;
+        if (currentEpochEl) currentEpochEl.textContent = this.state.currentEpoch;
+        if (liquidReserveEl) liquidReserveEl.textContent = `${this.formatNumber(liquidFmt)} USDC`;
+        if (totalAssetsEl) totalAssetsEl.textContent = `${this.formatNumber(totalAssetsFmt)} USDC`;
+        if (totalSupplyEl) totalSupplyEl.textContent = `${this.formatNumber(totalSharesFmt)} VERA`;
+        if (sharePriceEl) sharePriceEl.textContent = `${sharePriceNum.toFixed(4)} USDC`;
+
+        if (vaultStatusEl) {
+            if (this.state.paused) {
+                vaultStatusEl.textContent = "Paused";
+                vaultStatusEl.className = "status-pill status-paused";
+            } else {
+                vaultStatusEl.textContent = "Active";
+                vaultStatusEl.className = "status-pill status-active";
+            }
+        }
+
+        // Balances
+        const usdcBalFmt = ethers.formatUnits(this.state.userUsdcBalance, 6);
+        const vSharesFmt = ethers.formatUnits(this.state.userVaultShares, 6);
+
+        const usdcBalEl = document.getElementById("usdcBalance");
+        const vaultSharesEl = document.getElementById("vaultShares");
+        const headerBalEl = document.getElementById("headerUsdcBal");
+
+        if (usdcBalEl) usdcBalEl.textContent = `${this.formatNumber(usdcBalFmt)} USDC`;
+        if (vaultSharesEl) vaultSharesEl.textContent = `${this.formatNumber(vSharesFmt)} VERA`;
+        if (headerBalEl) headerBalEl.textContent = `${this.formatNumber(usdcBalFmt)} USDC`;
+
+        // Compliance status badge
+        const complianceEl = document.getElementById("complianceStatus");
+        if (complianceEl) {
+            if (this.state.isCompliant) {
+                complianceEl.textContent = "✓ Compliant (Whitelisted)";
+                complianceEl.className = "user-compliance-badge status-compliant";
+            } else {
+                complianceEl.textContent = "✕ Restricted (Not Whitelisted)";
+                complianceEl.className = "user-compliance-badge status-non-compliant";
+            }
+        }
+
+        // Target Epoch in withdrawal card
+        const targetEpochLabel = document.getElementById("targetEpochLabel");
+        if (targetEpochLabel) targetEpochLabel.textContent = this.state.currentEpoch;
+
+        // Render queue list
+        this.renderQueueTickets();
+    }
+
+    renderQueueTickets() {
+        const queueContainer = document.getElementById("withdrawalQueue");
+        const counterEl = document.getElementById("pendingRequests");
+        if (!queueContainer) return;
+
+        const tickets = this.state.requests || [];
+        if (counterEl) counterEl.textContent = tickets.length;
+
+        if (tickets.length === 0) {
+            queueContainer.innerHTML = '<p class="empty-state">No redemption tickets found.</p>';
             return;
         }
 
-        const epochInput = document.getElementById('epochSetId');
-        const epoch = epochInput.value;
+        queueContainer.innerHTML = tickets.map(req => {
+            const sharesFmt = this.formatNumber(ethers.formatUnits(req.shares, 6));
+            const epochId = req.epochRequested;
+            const allocated = this.state.epochAllocatedLiquidity[epochId] || 0n;
+            const totalSharesInEpoch = this.state.epochTotalShares[epochId] || req.shares;
 
-        if (!epoch || epoch < 0) {
-            this.showNotification('Please enter a valid epoch ID', 'error');
-            return;
-        }
+            let statusHtml = "";
+            let actionHtml = "";
+            let itemClass = "queue-item";
+
+            if (req.claimed) {
+                itemClass += " status-claimed";
+                statusHtml = '<span class="queue-badge badge-claimed">Claimed</span>';
+            } else if (allocated > 0n) {
+                itemClass += " status-claimable";
+                statusHtml = '<span class="queue-badge badge-claimable">Liquidity Allocated</span>';
+                
+                // Calculate pro-rata claimable USDC
+                const claimableWei = (req.shares * allocated) / totalSharesInEpoch;
+                const claimableFmt = this.formatNumber(ethers.formatUnits(claimableWei, 6));
+
+                actionHtml = `
+                    <div class="queue-action">
+                        <span class="queue-claimable-amount">+${claimableFmt} USDC</span>
+                        <button class="btn btn-success btn-sm claim-btn" data-request-id="${req.id}">
+                            Claim USDC
+                        </button>
+                    </div>
+                `;
+            } else if (epochId === this.state.currentEpoch) {
+                itemClass += " status-pending";
+                statusHtml = '<span class="queue-badge badge-pending">Active Epoch</span>';
+            } else {
+                itemClass += " status-pending";
+                statusHtml = '<span class="queue-badge badge-pending">Awaiting Settlement</span>';
+            }
+
+            return `
+                <div class="${itemClass}">
+                    <div class="queue-main-info">
+                        <div class="queue-title-row">
+                            <span class="queue-id">Ticket #${req.id}</span>
+                            ${statusHtml}
+                        </div>
+                        <div class="queue-details">
+                            <strong>${sharesFmt} VERA</strong> • Requested in Epoch ${epochId}
+                        </div>
+                    </div>
+                    ${actionHtml}
+                </div>
+            `;
+        }).join("");
+    }
+
+    async refreshBlockchainData() {
+        if (!this.isLiveWeb3 || !this.contracts.vault) return;
 
         try {
-            this.showNotification('Setting epoch...', 'info');
+            const [
+                nav,
+                epoch,
+                totalA,
+                totalS,
+                isPaused,
+                userUsdc,
+                userShares,
+                compliant
+            ] = await Promise.all([
+                this.contracts.vault.currentNAV(),
+                this.contracts.vault.currentEpoch(),
+                this.contracts.vault.totalAssets(),
+                this.contracts.vault.totalSupply(),
+                this.contracts.vault.paused(),
+                this.contracts.usdc.balanceOf(this.userAddress),
+                this.contracts.vault.balanceOf(this.userAddress),
+                this.contracts.compliance.isCompliant(this.userAddress)
+            ]);
 
-            // Simulate epoch setting in demo mode
-            this.mockData.currentEpoch = parseInt(epoch);
-            this.updateDashboard();
-            epochInput.value = '';
-            this.showNotification(`Current epoch set to ${epoch}!`, 'success');
-        } catch (error) {
-            console.error('Epoch setting error:', error);
-            this.showNotification('Epoch setting failed: ' + error.message, 'error');
+            this.state.currentNAV = nav;
+            this.state.currentEpoch = Number(epoch);
+            this.state.totalAssets = totalA;
+            this.state.totalSupply = totalS;
+            this.state.liquidReserve = totalA > nav ? totalA - nav : 0n;
+            this.state.paused = isPaused;
+            this.state.userUsdcBalance = userUsdc;
+            this.state.userVaultShares = userShares;
+            this.state.isCompliant = compliant;
+
+            this.updateUI();
+        } catch (err) {
+            console.warn("Error refreshing on-chain state:", err);
         }
     }
 
-    // Pause vault
-    async pauseVault() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
-            return;
-        }
-
-        try {
-            this.showNotification('Pausing vault...', 'info');
-            this.mockData.paused = true;
-            this.updateDashboard();
-            this.showNotification('Vault paused successfully!', 'success');
-        } catch (error) {
-            console.error('Pause error:', error);
-            this.showNotification('Pause failed: ' + error.message, 'error');
-        }
-    }
-
-    // Unpause vault
-    async unpauseVault() {
-        if (!this.userAddress) {
-            this.showNotification('Please connect wallet first', 'error');
-            return;
-        }
-
-        try {
-            this.showNotification('Unpausing vault...', 'info');
-            this.mockData.paused = false;
-            this.updateDashboard();
-            this.showNotification('Vault unpaused successfully!', 'success');
-        } catch (error) {
-            console.error('Unpause error:', error);
-            this.showNotification('Unpause failed: ' + error.message, 'error');
-        }
-    }
-
-    // Show notification
-    showNotification(message, type = 'info') {
-        const notification = document.getElementById('notification');
-        notification.textContent = message;
-        notification.className = `notification ${type}`;
-
-        // Remove hidden class to show notification
-        notification.classList.remove('hidden');
-
-        // Auto-hide after 5 seconds
-        setTimeout(() => {
-            notification.classList.add('hidden');
+    startPolling() {
+        this.stopPolling();
+        this.pollingInterval = setInterval(() => {
+            if (this.isLiveWeb3) {
+                this.refreshBlockchainData();
+            }
         }, 5000);
     }
 
-    // Start polling for updates
-    startPolling() {
-        this.pollingInterval = setInterval(() => {
-            this.updateDashboard();
-        }, 5000); // Poll every 5 seconds
-    }
-
-    // Stop polling
     stopPolling() {
         if (this.pollingInterval) {
             clearInterval(this.pollingInterval);
@@ -583,16 +1109,40 @@ class VERAProtocol {
         }
     }
 
-    // Load user-specific data
-    async loadUserData() {
-        // In a real implementation, this would fetch user-specific data from contracts
-        this.updateDashboard();
+    // ------------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------------
+    showNotification(message, type = "info") {
+        const notif = document.getElementById("notification");
+        if (!notif) return;
+
+        notif.textContent = message;
+        notif.className = `notification ${type}`;
+        notif.classList.remove("hidden");
+
+        clearTimeout(this._notifTimeout);
+        this._notifTimeout = setTimeout(() => {
+            notif.classList.add("hidden");
+        }, 6000);
+    }
+
+    formatAddress(addr) {
+        if (!addr) return "0x00...000";
+        return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    }
+
+    formatNumber(valStr) {
+        const num = parseFloat(valStr);
+        if (isNaN(num)) return "0.00";
+        return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
     }
 }
 
-// Initialize the application
-let veraProtocol;
-document.addEventListener('DOMContentLoaded', () => {
-    veraProtocol = new VERAProtocol();
-    veraProtocol.init();
+// ----------------------------------------------------------------------------
+// Bootstrap Application on DOM Ready
+// ----------------------------------------------------------------------------
+let appInstance;
+document.addEventListener("DOMContentLoaded", () => {
+    appInstance = new VERAProtocolApp();
+    appInstance.init();
 });

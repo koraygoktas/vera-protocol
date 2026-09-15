@@ -3,130 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VERA Protocol - Verifiable Evaluated Real-World Assets</title>
+    <title>VERA Protocol | ZK-ML RWA Yield Vault & Async Epoch Queue</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>VERA Protocol</h1>
-            <p>Verifiable Evaluated Real-World Assets</p>
-            <button id="connectWallet" class="btn btn-primary">Connect Wallet</button>
-            <div id="walletInfo" class="wallet-info hidden">
-                <span id="walletAddress"></span>
-                <button id="disconnectWallet" class="btn btn-secondary">Disconnect</button>
+    <div class="app-wrapper">
+        <!-- Top Navigation Bar -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <span class="logo-icon">◈</span>
+                </div>
+                <div class="brand-text">
+                    <h1>VERA Protocol</h1>
+                    <span class="brand-tagline">Verifiable Evaluated Real-World Assets</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="mode-badge" id="appModeBadge">
+                    <span class="pulse-dot"></span>
+                    <span id="appModeText">Simulation Mode</span>
+                </div>
+
+                <button id="toggleConfigBtn" class="btn btn-outline btn-sm" title="Configure Contract Addresses">
+                    ⚙ Addresses
+                </button>
+
+                <div id="walletSection">
+                    <button id="connectWallet" class="btn btn-primary">
+                        <span class="btn-icon">⚡</span> Connect Wallet
+                    </button>
+                    <div id="walletInfo" class="wallet-pill hidden">
+                        <div class="wallet-balance-tag" id="headerUsdcBal">0 USDC</div>
+                        <span id="walletAddress" class="mono-address">0x00...000</span>
+                        <button id="disconnectWallet" class="btn-disconnect" title="Disconnect">✕</button>
+                    </div>
+                </div>
             </div>
         </header>
 
-        <div id="notification" class="notification hidden"></div>
-
-        <div class="dashboard">
-            <div class="card">
-                <h2>Protocol Status</h2>
-                <div class="stat">
-                    <span class="label">Current NAV:</span>
-                    <span id="currentNAV" class="value">0 USDC</span>
+        <!-- Contract Config Drawer (Collapsible) -->
+        <div id="configDrawer" class="config-drawer hidden">
+            <div class="config-header">
+                <h3>Contract Address Configuration</h3>
+                <p>Deploy contracts or adjust addresses for local Anvil / Sepolia testing.</p>
+            </div>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label>VERAVault (ERC-4626):</label>
+                    <input type="text" id="cfgVault" spellcheck="false">
                 </div>
-                <div class="stat">
-                    <span class="label">Current Epoch:</span>
-                    <span id="currentEpoch" class="value">0</span>
+                <div class="config-item">
+                    <label>EpochQueue (Async Queue):</label>
+                    <input type="text" id="cfgQueue" spellcheck="false">
                 </div>
-                <div class="stat">
-                    <span class="label">Liquid Reserve:</span>
-                    <span id="liquidReserve" class="value">0 USDC</span>
+                <div class="config-item">
+                    <label>MockUSDC (Underlying Asset):</label>
+                    <input type="text" id="cfgUsdc" spellcheck="false">
                 </div>
-                <div class="stat">
-                    <span class="label">Share Price:</span>
-                    <span id="sharePrice" class="value">1.00 USDC</span>
+                <div class="config-item">
+                    <label>AssetToken (Compliance Registry):</label>
+                    <input type="text" id="cfgCompliance" spellcheck="false">
                 </div>
-                <div class="stat">
-                    <span class="label">Total Assets:</span>
-                    <span id="totalAssets" class="value">0 USDC</span>
-                </div>
-                <div class="stat">
-                    <span class="label">Vault Status:</span>
-                    <span id="vaultStatus" class="value status-active">Active</span>
+                <div class="config-item">
+                    <label>MockGroth16Verifier (ZK Verifier):</label>
+                    <input type="text" id="cfgVerifier" spellcheck="false">
                 </div>
             </div>
-
-            <div class="card">
-                <h2>User Operations</h2>
-                <div class="stat">
-                    <span class="label">Compliance Status:</span>
-                    <span id="complianceStatus" class="value status-unknown">Unknown</span>
-                </div>
-                <div class="stat">
-                    <span class="label">USDC Balance:</span>
-                    <span id="usdcBalance" class="value">0 USDC</span>
-                </div>
-                <div class="stat">
-                    <span class="label">Vault Shares:</span>
-                    <span id="vaultShares" class="value">0 VERA</span>
-                </div>
-
-                <div class="form-group">
-                    <label for="depositAmount">Deposit Amount (USDC)</label>
-                    <input type="number" id="depositAmount" placeholder="Enter amount" min="0">
-                    <button id="depositBtn" class="btn btn-primary">Deposit</button>
-                </div>
-
-                <div class="form-group">
-                    <label for="withdrawAmount">Withdraw Amount (USDC)</label>
-                    <input type="number" id="withdrawAmount" placeholder="Enter amount" min="0">
-                    <button id="withdrawBtn" class="btn btn-secondary">Request Withdraw</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Async Withdrawal (Epoch Queue)</h2>
-                <div class="stat">
-                    <span class="label">Pending Requests:</span>
-                    <span id="pendingRequests" class="value">0</span>
-                </div>
-                <div id="withdrawalQueue" class="queue-list">
-                    <p class="empty-state">No pending withdrawal requests</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>ZK-ML Valuation Simulator</h2>
-                <div class="form-group">
-                    <label for="newNAV">New NAV Value (USDC)</label>
-                    <input type="number" id="newNAV" placeholder="Enter new NAV" min="0">
-                    <button id="updateValuationBtn" class="btn btn-primary">Update Valuation</button>
-                </div>
-                <div class="form-group">
-                    <label for="newEpoch">New Epoch ID</label>
-                    <input type="number" id="newEpoch" placeholder="Enter epoch ID" min="0">
-                </div>
-                <div class="info-box">
-                    <p>This simulates the ZK-ML valuation update process. In production, this would use actual ZK proofs from off-chain ML models.</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Admin Controls</h2>
-                <div class="form-group">
-                    <label for="epochProcessId">Process Epoch ID</label>
-                    <input type="number" id="epochProcessId" placeholder="Enter epoch ID" min="0">
-                    <label for="availableLiquidity">Available Liquidity (USDC)</label>
-                    <input type="number" id="availableLiquidity" placeholder="Enter liquidity" min="0">
-                    <button id="processEpochBtn" class="btn btn-secondary">Process Epoch</button>
-                </div>
-                <div class="form-group">
-                    <label for="epochSetId">Set Current Epoch</label>
-                    <input type="number" id="epochSetId" placeholder="Enter epoch ID" min="0">
-                    <button id="setEpochBtn" class="btn btn-secondary">Set Epoch</button>
-                </div>
-                <div class="admin-controls">
-                    <button id="pauseBtn" class="btn btn-danger">Pause Vault</button>
-                    <button id="unpauseBtn" class="btn btn-success">Unpause Vault</button>
-                </div>
+            <div class="config-actions">
+                <button id="saveConfigBtn" class="btn btn-primary btn-sm">Save & Reload Contracts</button>
+                <button id="resetConfigBtn" class="btn btn-outline btn-sm">Reset Defaults</button>
             </div>
         </div>
 
-        <footer>
-            <p>VERA Protocol Demo - ZK-based RWA Tokenization</p>
+        <!-- System Notification Banner -->
+        <div id="notification" class="notification hidden"></div>
+
+        <!-- Quick Testnet / Demo Utilities Bar -->
+        <section class="quick-tools-bar">
+            <div class="tools-left">
+                <span class="tools-title">Developer & Demo Sandbox:</span>
+                <button id="faucetBtn" class="btn btn-tool" title="Mint 10,000 Mock USDC to active wallet">
+                    🪙 Mint 10k USDC
+                </button>
+                <button id="toggleKycBtn" class="btn btn-tool" title="Toggle Whitelist compliance on AssetToken">
+                    🛡 Toggle Compliance (KYC)
+                </button>
+            </div>
+            <div class="tools-right">
+                <span class="user-compliance-badge status-compliant" id="complianceStatus">
+                    ✓ Compliant
+                </span>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-grid">
+            <!-- 1. Protocol Metrics Card -->
+            <section class="card metrics-card">
+                <div class="card-header">
+                    <h2>Protocol Metrics</h2>
+                    <span id="vaultStatus" class="status-pill status-active">Active</span>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <span class="metric-label">Off-chain RWA NAV</span>
+                        <span id="currentNAV" class="metric-value">50,000.00 USDC</span>
+                        <span class="metric-sub">ZK-Verified Valuation</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Current Epoch</span>
+                        <span id="currentEpoch" class="metric-value highlight-num">1</span>
+                        <span class="metric-sub">Sequential Proof Monotonicity</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Liquid Vault Reserves</span>
+                        <span id="liquidReserve" class="metric-value">10,000.00 USDC</span>
+                        <span class="metric-sub">On-chain Cash Buffer</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Total Vault Assets</span>
+                        <span id="totalAssets" class="metric-value">60,000.00 USDC</span>
+                        <span class="metric-sub">Cash + RWA NAV</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Total VERA Shares</span>
+                        <span id="totalSupply" class="metric-value">50,000.00 VERA</span>
+                        <span class="metric-sub">ERC-4626 Share Supply</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Current Share Price</span>
+                        <span id="sharePrice" class="metric-value">1.2000 USDC</span>
+                        <span class="metric-sub">1 VERA = 1.20 USDC</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Deposit & Immediate Minting Card -->
+            <section class="card action-card">
+                <div class="card-header">
+                    <h2>Deposit Assets</h2>
+                    <span class="card-sub">Instant ERC-4626 Share Minting</span>
+                </div>
+                <div class="user-balance-row">
+                    <span>Available USDC Balance:</span>
+                    <strong id="usdcBalance">1,000.00 USDC</strong>
+                </div>
+
+                <div class="input-container">
+                    <div class="input-label-row">
+                        <label for="depositAmount">Deposit Amount</label>
+                        <div class="quick-pct-group">
+                            <button type="button" class="pct-btn" data-target="depositAmount" data-pct="25">25%</button>
+                            <button type="button" class="pct-btn" data-target="depositAmount" data-pct="50">50%</button>
+                            <button type="button" class="pct-btn" data-target="depositAmount" data-pct="100">MAX</button>
+                        </div>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="depositAmount" placeholder="0.00" min="0" step="any">
+                        <span class="input-symbol">USDC</span>
+                    </div>
+                </div>
+
+                <div class="preview-box">
+                    <div class="preview-row">
+                        <span>Expected Vault Shares:</span>
+                        <span id="depositPreviewShares" class="preview-val">0.00 VERA</span>
+                    </div>
+                    <div class="preview-row">
+                        <span>Compliance Verification:</span>
+                        <span class="preview-val text-success">Compliant & Whitelisted</span>
+                    </div>
+                </div>
+
+                <button id="depositBtn" class="btn btn-primary btn-block">
+                    Approve & Deposit
+                </button>
+            </section>
+
+            <!-- 3. Asynchronous Redeem / Withdraw Request Card -->
+            <section class="card action-card">
+                <div class="card-header">
+                    <h2>Async Redemption</h2>
+                    <span class="card-sub">EpochQueue Asynchronous Exit</span>
+                </div>
+
+                <div class="user-balance-row">
+                    <span>Your Vault Shares:</span>
+                    <strong id="vaultShares">500.00 VERA</strong>
+                </div>
+
+                <!-- Mode Selector (Redeem Shares vs Withdraw Assets) -->
+                <div class="tabs-nav">
+                    <button id="tabRedeem" class="tab-btn active" data-mode="redeem">Redeem Shares (VERA)</button>
+                    <button id="tabWithdraw" class="tab-btn" data-mode="withdraw">Withdraw Assets (USDC)</button>
+                </div>
+
+                <div class="input-container">
+                    <div class="input-label-row">
+                        <label id="withdrawInputLabel" for="withdrawAmount">Redeem Share Amount</label>
+                        <div class="quick-pct-group">
+                            <button type="button" class="pct-btn" data-target="withdrawAmount" data-pct="25">25%</button>
+                            <button type="button" class="pct-btn" data-target="withdrawAmount" data-pct="50">50%</button>
+                            <button type="button" class="pct-btn" data-target="withdrawAmount" data-pct="100">MAX</button>
+                        </div>
+                    </div>
+                    <div class="input-with-symbol">
+                        <input type="number" id="withdrawAmount" placeholder="0.00" min="0" step="any">
+                        <span id="withdrawSymbol" class="input-symbol">VERA</span>
+                    </div>
+                </div>
+
+                <div class="preview-box">
+                    <div class="preview-row">
+                        <span>Target Queue:</span>
+                        <span class="preview-val">Epoch <span id="targetEpochLabel">1</span></span>
+                    </div>
+                    <div class="preview-row">
+                        <span>Self-Redemption Allowance:</span>
+                        <span class="preview-val text-success">Not Required (Self-burn)</span>
+                    </div>
+                </div>
+
+                <div class="info-alert">
+                    <span>ℹ</span>
+                    <p>Shares are burned immediately and a redemption ticket is enqueued in <strong>EpochQueue</strong>. When off-chain liquidity arrives, you can claim your pro-rata USDC.</p>
+                </div>
+
+                <button id="withdrawBtn" class="btn btn-accent btn-block">
+                    Enqueue Redemption Request
+                </button>
+            </section>
+
+            <!-- 4. Async Withdrawal Queue & Claim Card -->
+            <section class="card queue-card">
+                <div class="card-header">
+                    <h2>EpochQueue Tickets & Claims</h2>
+                    <span class="badge-counter"><span id="pendingRequests">0</span> Tickets</span>
+                </div>
+                <p class="section-desc">Active redemption requests waiting for or processed in periodic epoch liquidity settlements.</p>
+
+                <div id="withdrawalQueue" class="queue-list">
+                    <p class="empty-state">No redemption tickets found.</p>
+                </div>
+            </section>
+
+            <!-- 5. ZK-ML Valuation Simulator & Circuit Breaker -->
+            <section class="card zk-card">
+                <div class="card-header">
+                    <h2>ZK-ML Valuation Simulator</h2>
+                    <span class="status-pill pill-zk">Groth16 + Proof Binding</span>
+                </div>
+                <p class="section-desc">Simulate off-chain ZK-SNARK valuation updates with cryptographic binding and automated Circuit Breaker.</p>
+
+                <div class="zk-inputs-grid">
+                    <div class="input-container">
+                        <label for="newNAV">Target NAV (USDC)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="newNAV" placeholder="e.g. 51500" min="0" step="any">
+                            <span class="input-symbol">USDC</span>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <label for="newEpoch">Epoch ID (Must be Epoch + 1)</label>
+                        <input type="number" id="newEpoch" placeholder="2" min="1">
+                    </div>
+                </div>
+
+                <!-- Circuit Breaker Deviation Meter -->
+                <div class="deviation-meter-box">
+                    <div class="meter-header">
+                        <span>Valuation Delta:</span>
+                        <strong id="deltaBpsText">0.00% (+0 bps)</strong>
+                    </div>
+                    <div class="meter-bar-track">
+                        <div id="meterBar" class="meter-bar-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="meter-limits">
+                        <span>0%</span>
+                        <span class="limit-warn">Threshold: ±5.00% (500 bps)</span>
+                        <span>10%</span>
+                    </div>
+                </div>
+
+                <div class="proof-details-box">
+                    <div class="proof-item">
+                        <span class="proof-k">Proof Binding Hash:</span>
+                        <span id="proofBindingHashDisplay" class="proof-v mono">keccak256(vault, epoch, chainId, nav)</span>
+                    </div>
+                    <div class="proof-item">
+                        <span class="proof-k">Circuit Breaker Status:</span>
+                        <span id="circuitBreakerNotice" class="proof-v text-success">Safe (Within Bounds)</span>
+                    </div>
+                </div>
+
+                <button id="updateValuationBtn" class="btn btn-primary btn-block">
+                    Verify Proof & Update Valuation
+                </button>
+            </section>
+
+            <!-- 6. Admin & Protocol Operations Card -->
+            <section class="card admin-card">
+                <div class="card-header">
+                    <h2>Epoch Settlement & Admin Operations</h2>
+                    <span class="status-pill pill-admin">Admin Control</span>
+                </div>
+                <p class="section-desc">Simulate institutional liquidity return from off-chain RWA yield into EpochQueue to unlock user claims.</p>
+
+                <div class="admin-process-grid">
+                    <div class="input-container">
+                        <label for="epochProcessId">Epoch to Settle</label>
+                        <input type="number" id="epochProcessId" placeholder="1" min="0">
+                    </div>
+                    <div class="input-container">
+                        <label for="availableLiquidity">Returned Liquidity (USDC)</label>
+                        <div class="input-with-symbol">
+                            <input type="number" id="availableLiquidity" placeholder="20000" min="0" step="any">
+                            <span class="input-symbol">USDC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="processEpochBtn" class="btn btn-secondary btn-block">
+                    Process Epoch & Allocate Liquidity
+                </button>
+
+                <div class="admin-divider"></div>
+
+                <div class="admin-emergency-row">
+                    <div class="emergency-text">
+                        <strong>Emergency Circuit Controls:</strong>
+                        <p>Manually freeze or resume vault operations in case of volatility or audits.</p>
+                    </div>
+                    <div class="emergency-btns">
+                        <button id="pauseBtn" class="btn btn-danger">Pause Vault</button>
+                        <button id="unpauseBtn" class="btn btn-success">Unpause Vault</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>VERA Protocol • Zero-Knowledge ML Real-World Asset Yield Vault • ERC-4626 & EpochQueue</p>
         </footer>
     </div>
 
