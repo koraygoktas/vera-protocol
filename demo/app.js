@@ -6,11 +6,11 @@
 // 1. CONFIGURABLE CONTRACT ADDRESSES
 // Adjust these addresses to target local Anvil, Hardhat, Sepolia, or Mainnet deployments.
 const CONTRACT_ADDRESSES = {
-    vault: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-    epochQueue: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-    usdc: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    compliance: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-    verifier: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+    vault: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+    epochQueue: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+    usdc: "0x59b670e9fA9D0A427751Af201D676719a970857b",
+    compliance: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+    verifier: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44"
 };
 
 // 2. CONTRACT ABIS (Synchronized with contracts under src/)
@@ -83,6 +83,7 @@ class VERAProtocolApp {
         this.provider = null;
         this.signer = null;
         this.userAddress = null;
+        this.currentAccount = null;
         this.chainId = 31337; // Default Anvil/Local chain ID
         this.isLiveWeb3 = false;
         
@@ -155,11 +156,11 @@ class VERAProtocolApp {
         this.updateZKSimulatorPreview();
         this.updateUI();
 
-        // Check if MetaMask is available and already connected
-        if (window.ethereum) {
+        // Check if MetaMask is available and already connected (unless explicitly disconnected by user)
+        if (window.ethereum && sessionStorage.getItem("vera_wallet_disconnected") !== "true") {
             try {
                 const accounts = await window.ethereum.request({ method: "eth_accounts" });
-                if (accounts.length > 0) {
+                if (accounts && accounts.length > 0) {
                     await this.connectWallet();
                 }
             } catch (err) {
@@ -186,9 +187,18 @@ class VERAProtocolApp {
     // Event Listeners
     // ------------------------------------------------------------------------
     setupEventListeners() {
-        // Wallet connection
+        // Wallet connection & disconnection
         document.getElementById("connectWallet")?.addEventListener("click", () => this.connectWallet());
-        document.getElementById("disconnectWallet")?.addEventListener("click", () => this.disconnectWallet());
+        
+        const handleDisconnect = (e) => {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.disconnectWallet();
+        };
+        document.getElementById("disconnectBtn")?.addEventListener("click", handleDisconnect);
+        document.getElementById("disconnectWallet")?.addEventListener("click", handleDisconnect);
 
         // Address Config Drawer
         document.getElementById("toggleConfigBtn")?.addEventListener("click", () => {
@@ -241,14 +251,28 @@ class VERAProtocolApp {
         });
 
         // Dynamic deposit preview calculation
-        document.getElementById("depositAmount")?.addEventListener("input", (e) => {
-            const amount = parseFloat(e.target.value) || 0;
+        document.getElementById("depositAmount")?.addEventListener("input", async (e) => {
+            const valStr = e.target.value.trim();
+            const amount = parseFloat(valStr) || 0;
             const previewEl = document.getElementById("depositPreviewShares");
-            if (previewEl) {
-                const sharePrice = this.calculateSharePrice();
-                const expectedShares = sharePrice > 0 ? (amount / sharePrice).toFixed(4) : amount.toFixed(4);
-                previewEl.textContent = `${expectedShares} VERA`;
+            if (!previewEl) return;
+            if (amount <= 0) {
+                previewEl.textContent = "0.00 VERA";
+                return;
             }
+            if (this.isLiveWeb3 && this.contracts.vault) {
+                try {
+                    const parsed = ethers.parseUnits(valStr, 6);
+                    const shares = await this.contracts.vault.previewDeposit(parsed);
+                    previewEl.textContent = `${this.formatNumber(ethers.formatUnits(shares, 6))} VERA`;
+                    return;
+                } catch (err) {
+                    // Fall back to local calculation
+                }
+            }
+            const sharePrice = this.calculateSharePrice();
+            const expectedShares = sharePrice > 0 ? (amount / sharePrice).toFixed(4) : amount.toFixed(4);
+            previewEl.textContent = `${expectedShares} VERA`;
         });
 
         // ZK Valuation inputs & real-time Circuit Breaker deviation meter
@@ -276,6 +300,7 @@ class VERAProtocolApp {
                     this.disconnectWallet();
                 } else {
                     this.userAddress = accounts[0];
+                    this.currentAccount = accounts[0];
                     this.updateWalletUI();
                     this.refreshBlockchainData();
                 }
@@ -291,9 +316,11 @@ class VERAProtocolApp {
     // Wallet & Web3 Management
     // ------------------------------------------------------------------------
     async connectWallet() {
+        sessionStorage.removeItem("vera_wallet_disconnected");
         if (!window.ethereum) {
             this.showNotification("MetaMask not detected. Running in Interactive Simulation Mode.", "warning");
             this.userAddress = "0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496";
+            this.currentAccount = this.userAddress;
             this.updateWalletUI();
             this.updateUI();
             return;
@@ -304,6 +331,7 @@ class VERAProtocolApp {
             const accounts = await this.provider.send("eth_requestAccounts", []);
             this.signer = await this.provider.getSigner();
             this.userAddress = accounts[0];
+            this.currentAccount = accounts[0];
 
             const network = await this.provider.getNetwork();
             this.chainId = Number(network.chainId);
@@ -328,15 +356,33 @@ class VERAProtocolApp {
     }
 
     disconnectWallet() {
+        sessionStorage.setItem("vera_wallet_disconnected", "true");
         this.userAddress = null;
+        this.currentAccount = null;
         this.provider = null;
         this.signer = null;
         this.isLiveWeb3 = false;
         this.contracts = {};
         this.stopPolling();
+
+        // Reset balances, shares, and tickets in state
+        this.state.userUsdcBalance = 0n;
+        this.state.userVaultShares = 0n;
+        this.state.isCompliant = false;
+        this.state.requests = [];
+
+        // Clear active form inputs
+        const depInput = document.getElementById("depositAmount");
+        if (depInput) depInput.value = "";
+        const depPreview = document.getElementById("depositPreviewShares");
+        if (depPreview) depPreview.textContent = "0.00 VERA";
+
+        const withInput = document.getElementById("withdrawAmount");
+        if (withInput) withInput.value = "";
+
         this.updateWalletUI();
         this.updateUI();
-        this.showNotification("Wallet disconnected. Returned to default simulator state.", "info");
+        this.showNotification("Wallet disconnected. State and balances reset.", "info");
     }
 
     async detectLiveContracts() {
@@ -363,27 +409,40 @@ class VERAProtocolApp {
         const connectBtn = document.getElementById("connectWallet");
         const walletInfo = document.getElementById("walletInfo");
         const walletAddress = document.getElementById("walletAddress");
+        const headerBal = document.getElementById("headerUsdcBal");
         const modeBadge = document.getElementById("appModeBadge");
         const modeText = document.getElementById("appModeText");
 
-        if (this.userAddress) {
+        const activeAccount = this.currentAccount || this.userAddress;
+
+        if (activeAccount) {
             connectBtn?.classList.add("hidden");
             walletInfo?.classList.remove("hidden");
-            if (walletAddress) walletAddress.textContent = this.formatAddress(this.userAddress);
+            if (walletAddress) walletAddress.textContent = this.formatAddress(activeAccount);
+            if (headerBal) {
+                const usdcFmt = ethers.formatUnits(this.state.userUsdcBalance, 6);
+                headerBal.textContent = `${this.formatNumber(usdcFmt)} USDC`;
+            }
         } else {
             connectBtn?.classList.remove("hidden");
             walletInfo?.classList.add("hidden");
+            if (walletAddress) walletAddress.textContent = "0x00...000";
+            if (headerBal) headerBal.textContent = "0.00 USDC";
         }
 
         if (modeBadge && modeText) {
-            if (this.isLiveWeb3) {
+            if (this.isLiveWeb3 && activeAccount) {
                 modeText.textContent = `Live Web3 (Chain ${this.chainId})`;
                 modeBadge.style.borderColor = "rgba(16, 185, 129, 0.4)";
                 modeBadge.style.color = "#34d399";
-            } else {
+            } else if (activeAccount) {
                 modeText.textContent = "Simulation Mode";
                 modeBadge.style.borderColor = "rgba(99, 102, 241, 0.3)";
                 modeBadge.style.color = "#c7d2fe";
+            } else {
+                modeText.textContent = "Not Connected";
+                modeBadge.style.borderColor = "rgba(156, 163, 175, 0.3)";
+                modeBadge.style.color = "#9ca3af";
             }
         }
     }
@@ -409,11 +468,11 @@ class VERAProtocolApp {
     }
 
     resetAddressConfig() {
-        CONTRACT_ADDRESSES.vault = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
-        CONTRACT_ADDRESSES.epochQueue = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
-        CONTRACT_ADDRESSES.usdc = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-        CONTRACT_ADDRESSES.compliance = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-        CONTRACT_ADDRESSES.verifier = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
+        CONTRACT_ADDRESSES.vault = "0x4A679253410272dd5232B3Ff7cF5dbB88f295319";
+        CONTRACT_ADDRESSES.epochQueue = "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f";
+        CONTRACT_ADDRESSES.usdc = "0x59b670e9fA9D0A427751Af201D676719a970857b";
+        CONTRACT_ADDRESSES.compliance = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1";
+        CONTRACT_ADDRESSES.verifier = "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44";
 
         this.initAddressInputs();
         this.showNotification("Reset contract addresses to defaults.", "info");
@@ -969,11 +1028,17 @@ class VERAProtocolApp {
         // Compliance status badge
         const complianceEl = document.getElementById("complianceStatus");
         if (complianceEl) {
-            if (this.state.isCompliant) {
-                complianceEl.textContent = "✓ Compliant (Whitelisted)";
-                complianceEl.className = "user-compliance-badge status-compliant";
+            const activeAccount = this.currentAccount || this.userAddress;
+            if (activeAccount) {
+                if (this.state.isCompliant) {
+                    complianceEl.textContent = "✓ Compliant (Whitelisted)";
+                    complianceEl.className = "user-compliance-badge status-compliant";
+                } else {
+                    complianceEl.textContent = "✕ Restricted (Not Whitelisted)";
+                    complianceEl.className = "user-compliance-badge status-non-compliant";
+                }
             } else {
-                complianceEl.textContent = "✕ Restricted (Not Whitelisted)";
+                complianceEl.textContent = "✕ Restricted (Not Connected)";
                 complianceEl.className = "user-compliance-badge status-non-compliant";
             }
         }
@@ -1086,6 +1151,42 @@ class VERAProtocolApp {
             this.state.userUsdcBalance = userUsdc;
             this.state.userVaultShares = userShares;
             this.state.isCompliant = compliant;
+
+            // Synchronize on-chain EpochQueue redemption requests
+            if (this.contracts.epochQueue) {
+                try {
+                    const nextReqId = await this.contracts.epochQueue.nextRequestId();
+                    const totalReqs = Number(nextReqId);
+                    const fetchedRequests = [];
+                    const epochTotalShares = {};
+                    const epochAllocatedLiquidity = {};
+
+                    for (let i = 0; i < totalReqs; i++) {
+                        const req = await this.contracts.epochQueue.requests(i);
+                        const epId = Number(req.epochRequested);
+                        fetchedRequests.push({
+                            id: i,
+                            user: req.user,
+                            shares: req.shares,
+                            epochRequested: epId,
+                            claimed: req.claimed
+                        });
+
+                        if (epochTotalShares[epId] === undefined) {
+                            epochTotalShares[epId] = await this.contracts.epochQueue.epochTotalShares(epId);
+                            epochAllocatedLiquidity[epId] = await this.contracts.epochQueue.epochAllocatedLiquidity(epId);
+                        }
+                    }
+
+                    fetchedRequests.reverse();
+                    this.state.requests = fetchedRequests;
+                    this.state.epochTotalShares = epochTotalShares;
+                    this.state.epochAllocatedLiquidity = epochAllocatedLiquidity;
+                    this.state.nextRequestId = totalReqs;
+                } catch (queueErr) {
+                    console.warn("Could not sync on-chain queue requests:", queueErr);
+                }
+            }
 
             this.updateUI();
         } catch (err) {

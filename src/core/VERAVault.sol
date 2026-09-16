@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../interfaces/IVERAVault.sol";
 import "../interfaces/IZKVerifier.sol";
 import "../libraries/ProofBindingLib.sol";
@@ -19,6 +20,8 @@ interface IComplianceRegistry {
  * @notice ZK-ML driven ERC-4626 yield vault with Circuit Breakers and async redemption queue
  */
 contract VERAVault is ERC4626, Pausable, ReentrancyGuardTransient, Ownable, IVERAVault {
+    using Math for uint256;
+
     error InvalidEpoch();
     error ProofExpired();
     error InvalidProofBinding();
@@ -106,6 +109,23 @@ contract VERAVault is ERC4626, Pausable, ReentrancyGuardTransient, Ownable, IVER
     /// @notice Total assets managed by vault: liquid token balance + off-chain real-world asset NAV
     function totalAssets() public view override returns (uint256) {
         return IERC20(asset()).balanceOf(address(this)) + currentNAV;
+    }
+
+    /// @dev Ensures 1:1 conversion for initial depositors when totalSupply is zero,
+    /// preventing share minting from rounding down to 0 due to pre-existing off-chain NAV.
+    function _convertToShares(uint256 assets, Math.Rounding rounding) internal view virtual override returns (uint256) {
+        uint256 supply = totalSupply();
+        return (supply == 0)
+            ? assets
+            : assets.mulDiv(supply + 10 ** _decimalsOffset(), totalAssets() + 1, rounding);
+    }
+
+    /// @dev Ensures 1:1 conversion for initial shares when totalSupply is zero.
+    function _convertToAssets(uint256 shares, Math.Rounding rounding) internal view virtual override returns (uint256) {
+        uint256 supply = totalSupply();
+        return (supply == 0)
+            ? shares
+            : shares.mulDiv(totalAssets() + 1, supply + 10 ** _decimalsOffset(), rounding);
     }
 
     function deposit(uint256 assets, address receiver) public override whenNotPaused returns (uint256) {
