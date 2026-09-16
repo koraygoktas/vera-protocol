@@ -6,11 +6,11 @@
 // 1. CONFIGURABLE CONTRACT ADDRESSES
 // Adjust these addresses to target local Anvil, Hardhat, Sepolia, or Mainnet deployments.
 const CONTRACT_ADDRESSES = {
-    vault: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
-    epochQueue: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
-    usdc: "0x59b670e9fA9D0A427751Af201D676719a970857b",
-    compliance: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
-    verifier: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44"
+    vault: "0x3615383F786427E9f8709DCEd092517E682642B7",
+    epochQueue: "0x221b4b625f92C11E8FED1aEf6EfbfB508b96934f",
+    usdc: "0xAaC468B927c2DfC39A151cD453aC92Ef16652f9B",
+    compliance: "0xdC119f1a1d9DA01083573B928e8DcE00bEd965Bc",
+    verifier: "0x24CCB4f4c7C8a34686eF5aA93F2fBcFF1595983C"
 };
 
 // 2. CONTRACT ABIS (Synchronized with contracts under src/)
@@ -468,11 +468,11 @@ class VERAProtocolApp {
     }
 
     resetAddressConfig() {
-        CONTRACT_ADDRESSES.vault = "0x4A679253410272dd5232B3Ff7cF5dbB88f295319";
-        CONTRACT_ADDRESSES.epochQueue = "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f";
-        CONTRACT_ADDRESSES.usdc = "0x59b670e9fA9D0A427751Af201D676719a970857b";
-        CONTRACT_ADDRESSES.compliance = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1";
-        CONTRACT_ADDRESSES.verifier = "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44";
+        CONTRACT_ADDRESSES.vault = "0x3615383F786427E9f8709DCEd092517E682642B7";
+        CONTRACT_ADDRESSES.epochQueue = "0x221b4b625f92C11E8FED1aEf6EfbfB508b96934f";
+        CONTRACT_ADDRESSES.usdc = "0xAaC468B927c2DfC39A151cD453aC92Ef16652f9B";
+        CONTRACT_ADDRESSES.compliance = "0xdC119f1a1d9DA01083573B928e8DcE00bEd965Bc";
+        CONTRACT_ADDRESSES.verifier = "0x24CCB4f4c7C8a34686eF5aA93F2fBcFF1595983C";
 
         this.initAddressInputs();
         this.showNotification("Reset contract addresses to defaults.", "info");

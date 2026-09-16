@@ -91,3 +91,6 @@ contract DeployScript is Script {
         console.log("==================================================");
     }
 }
+
+contract Deploy is DeployScript {}
+

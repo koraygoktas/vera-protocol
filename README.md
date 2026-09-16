@@ -20,6 +20,20 @@ VERA is a next-generation RWA (Real-World Asset) tokenization and yield vault pr
 - **Compliance**: Built-in whitelist mechanism for regulatory compliance
 - **Epoch-Based Withdrawals**: Prevents bank runs through period-based withdrawal queue
 
+## Sepolia Deployments
+
+The protocol contracts are deployed and verified on the Ethereum Sepolia Testnet (Chain ID: `11155111`):
+
+| Contract | Description | Address | Etherscan Link |
+| :--- | :--- | :--- | :--- |
+| **VERAVault** | ERC-4626 Vault + ZK Valuation + Circuit Breakers | `0x3615383F786427E9f8709DCEd092517E682642B7` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x3615383F786427E9f8709DCEd092517E682642B7#code) |
+| **EpochQueue** | Asynchronous Redemption & Settlement Queue | `0x221b4b625f92C11E8FED1aEf6EfbfB508b96934f` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x221b4b625f92C11E8FED1aEf6EfbfB508b96934f#code) |
+| **MockUSDC** | Underlying Asset (6 Decimals) | `0xAaC468B927c2DfC39A151cD453aC92Ef16652f9B` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0xAaC468B927c2DfC39A151cD453aC92Ef16652f9B#code) |
+| **AssetToken** | Compliance Whitelist Registry | `0xdC119f1a1d9DA01083573B928e8DcE00bEd965Bc` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0xdC119f1a1d9DA01083573B928e8DcE00bEd965Bc#code) |
+| **MockGroth16Verifier** | ZK-SNARK Groth16 Proof Verifier | `0x24CCB4f4c7C8a34686eF5aA93F2fBcFF1595983C` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x24CCB4f4c7C8a34686eF5aA93F2fBcFF1595983C#code) |
+
+All contracts have been verified on both **Etherscan** and **Sourcify**.
+
 ## Installation
 
 ```bash
